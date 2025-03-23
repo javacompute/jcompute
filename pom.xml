@@ -32,7 +32,7 @@ additional
 
         <bytedeco.version>1.5.11</bytedeco.version>
         <commons-compress.version>1.26.2</commons-compress.version>
-        <log4j.version>2.21.0</log4j.version>
+        <log4j.version>2.24.3</log4j.version>
 
         <lombok.version>1.18.37</lombok.version>
         <tukaani-xz.version>1.10</tukaani-xz.version>
