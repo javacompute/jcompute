@@ -6,4 +6,4 @@
 ** xref:modules/OpenCL.adoc[OpenCL]
 * Examples
 ** xref:examples/MandelSet.adoc[MandelSet]
-** xref:examples/SetCover.adoc[SetCover]
+** xref:examples/SetCovering.adoc[SetCovering]

@@ -4,9 +4,10 @@ JCompute provides basic building blocks for efficient computation with Java.
 
 The project started in October 2023.
 
-Aspects of interest: 
+We provide a thin _Java_ API for _OpenCL_ to ease GPU powered computation. 
 
-* Thin Java API on top of OpenCL (GPU compute)
+Other areas of interest: 
+
 * Graph Theory
 * Cartesian Product
 * Set Covering
