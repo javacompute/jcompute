@@ -59,8 +59,12 @@ public final class BindingProviderJocl implements OpenCLBindingProvider {
 
         var outPlatformCount = new int[1];
         // count available OpenCL platforms
-        var ret = clGetPlatformIDs(0, null, outPlatformCount);
-        if(ret!=CL.CL_SUCCESS) return List.of();
+        try {
+            var ret = clGetPlatformIDs(0, null, outPlatformCount);
+            if(ret!=CL.CL_SUCCESS) return List.of();
+        } catch (Throwable e) {
+            return List.of();
+        }
 
         final int platformCount = outPlatformCount[0];
         var platformBuffer = new cl_platform_id[platformCount];
