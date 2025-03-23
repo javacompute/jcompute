@@ -1,12 +1,14 @@
 = About
 
-JCompute provides basic building blocks for efficient computation with Java.
+image:https://javacompute.github.io/jcompute/jcompute.png[jcompute,120,120]
 
-We provide a thin *Java* API for *OpenCL* to make *GPU* powered computation easy. 
-
-Areas of interest: _Graph Theory_, _Cartesian Product_, _Set Covering_
+JCompute provides a thin *Java* API for *OpenCL* to make *GPU* powered computation easy. 
 
 JCompute Source Code Repository: https://github.com/javacompute/jcompute[GitHub]
+
+== Areas of Interest
+
+Graph Theory, Cartesian Product, Set Covering and more.
 
 == Technology Stack
 

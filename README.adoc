@@ -2,20 +2,22 @@
 
 image:https://javacompute.github.io/jcompute/jcompute.png[jcompute,120,120]
 
-JCompute provides basic building blocks for efficient computation with Java.
+JCompute provides a thin *Java* API for *OpenCL* to make *GPU* powered computation easy.
 
-We provide a thin *Java* API for *OpenCL* to make *GPU* powered computation easy. 
+For more details see https://javacompute.github.io/jcompute[JCompute Documentation] 
 
-Areas of interest: _Graph Theory_, _Cartesian Product_, _Set Covering_
+== Areas of Interest
 
-For more details see https://javacompute.github.io/jcompute[JCompute Documentation]
+Graph Theory, Cartesian Product, Set Covering and more.
 
 == Technology Stack
 
 * Java - Programming Language
 * OpenCL - Open Computing Language - https://registry.khronos.org/OpenCL/sdk/3.0/docs/man/html/
 
-== Examples
+== Getting Started
+
+Examples:
 
 * https://javacompute.github.io/jcompute/component-main/1.0.0/examples/MandelSet.html[MandelSet]
 * https://javacompute.github.io/jcompute/component-main/1.0.0/examples/SetCovering.html[SetCovering]
