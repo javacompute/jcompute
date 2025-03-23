@@ -1,4 +1,3 @@
-* xref:About.adoc[About]
 * xref:TerminologyAndResources.adoc[Terminology And Resources]
 * xref:Modules.adoc[Modules]
 ** xref:modules/Base.adoc[Base]

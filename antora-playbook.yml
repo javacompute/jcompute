@@ -1,7 +1,7 @@
 site:
   title: JCompute Docs
   url: https://javacompute.github.io/jcompute
-  start_page: component-main::About.adoc
+  start_page: component-main::index.adoc
 content:
   sources:
   - url: https://github.com/javacompute/jcompute.git

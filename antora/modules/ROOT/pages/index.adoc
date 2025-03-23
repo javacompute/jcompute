@@ -1,3 +1,19 @@
-= Index
+= JCompute
 
-TODO
+image:https://javacompute.github.io/jcompute/jcompute.png[jcompute,120,120]
+
+JCompute provides a thin *Java* API for *OpenCL* to make *GPU* powered computation easy. 
+
+JCompute Source Code Repository: https://github.com/javacompute/jcompute[GitHub]
+
+== Areas of Interest
+
+Graph Theory, Cartesian Product, Set Covering and more.
+
+== Technology Stack
+
+* Java - Programming Language
+* OpenCL - Open Computing Language - https://registry.khronos.org/OpenCL/sdk/3.0/docs/man/html/
+
+== License
+JCompute is _Open Source_ software released under the https://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license].
