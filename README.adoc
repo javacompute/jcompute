@@ -17,6 +17,8 @@ Graph Theory, Cartesian Product, Set Covering and more.
 
 == Getting Started
 
+include::antora/modules/ROOT/pages/partials/GettingStartedMaven.adoc[leveloffset=1]
+
 Examples:
 
 * https://javacompute.github.io/jcompute/component-main/1.0.0/examples/MandelSet.html[MandelSet]

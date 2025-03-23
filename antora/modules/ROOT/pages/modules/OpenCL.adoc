@@ -14,23 +14,6 @@
 
 |===
 
-Use either one of the provided bindings, to get started.
+== Getting Started (Maven)
 
-[source,xml]
-.Maven usage
-----
-<properties>
-    <jcompute.version>...</jcompute.version>
-</properties>
-
-<dependency>
-    <groupId>jcompute</groupId>
-    <artifactId>jcompute-opencl-bytedeco</artifactId>
-    <version>${jcompute.version}</version>
-</dependency>
-<dependency>
-    <groupId>jcompute</groupId>
-    <artifactId>jcompute-opencl-jocl</artifactId>
-    <version>${jcompute.version}</version>
-</dependency>
-----
+include::../partials/GettingStartedMaven.adoc[leveloffset=1]
