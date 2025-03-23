@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.jocl.CL;
 import org.jocl.cl_platform_id;
 
 import static org.jocl.CL.clGetPlatformIDs;
@@ -58,9 +59,8 @@ public final class BindingProviderJocl implements OpenCLBindingProvider {
 
         var outPlatformCount = new int[1];
         // count available OpenCL platforms
-        _Util.assertSuccess(
-                clGetPlatformIDs(0, null, outPlatformCount),
-                ()->"failed to call clGetPlatformIDs");
+        var ret = clGetPlatformIDs(0, null, outPlatformCount);
+        if(ret!=CL.CL_SUCCESS) return List.of();
 
         final int platformCount = outPlatformCount[0];
         var platformBuffer = new cl_platform_id[platformCount];
