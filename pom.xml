@@ -31,7 +31,7 @@ additional
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <bytedeco.version>1.5.11</bytedeco.version>
-        <commons-compress.version>1.26.2</commons-compress.version>
+        <commons-compress.version>1.27.1</commons-compress.version>
         <log4j.version>2.24.3</log4j.version>
 
         <lombok.version>1.18.37</lombok.version>
