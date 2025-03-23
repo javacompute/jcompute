@@ -1,0 +1,9 @@
+= Base
+
+[cols="1m,5a"]
+|===
+
+| jcompute-base
+| Common general purpose interfaces and utility classes 
+
+|===

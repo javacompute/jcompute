@@ -31,7 +31,7 @@
     <artifactId>jcompute-opencl-applib</artifactId>
     <name>JCompute - OpenCL (Applib)</name>
     <description>
-        JCompute - Thin layer of abstraction on top of OpenCL.
+        JCompute - Thin API layer for Java OpenCL programming.
     </description>
 
     <properties>
@@ -43,19 +43,7 @@
 
         <dependency>
             <groupId>jcompute</groupId>
-            <artifactId>jcompute-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jspecify</groupId>
-            <artifactId>jspecify</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
+            <artifactId>jcompute-base</artifactId>
         </dependency>
 
     </dependencies>

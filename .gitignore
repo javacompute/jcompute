@@ -28,3 +28,6 @@ replay_pid*
 **/target
 **/.classpath
 **/.project
+
+.asciidoctorconfig.adoc
+.derived

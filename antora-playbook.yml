@@ -1,0 +1,26 @@
+site:
+  title: JCompute Docs
+  url: https://javacompute.github.io/jcompute
+  start_page: component-main::About.adoc
+content:
+  sources:
+  - url: https://github.com/javacompute/jcompute.git
+    branches: HEAD
+    start_path: antora
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+  supplemental_files: antora/static
+asciidoc:
+  extensions:
+    - asciidoctor-kroki
+  attributes:
+    # https://docs.antora.org/antora-ui-default/template-customization/#page-pagination-attribute
+    page-pagination: ''
+    # kroki
+    # for more options see https://github.com/Mogztter/asciidoctor-kroki
+    kroki-default-format: svg # (default)
+    kroki-default-options: interactive # only available for SVG
+    kroki-fetch-diagram: true
+    kroki-server-url: https://kroki.io # (default)

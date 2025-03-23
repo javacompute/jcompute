@@ -1,0 +1,36 @@
+= OpenCL
+
+[cols="1m,5a"]
+|===
+
+| jcompute-opencl-applib
+| Thin API layer for Java OpenCL programming.
+
+| jcompute-opencl-bytedeco
+| Java Binding for OpenCL (optional)
+
+| jcompute-opencl-jocl
+| Java Binding for OpenCL (optional)
+
+|===
+
+Use either one of the provided bindings, to get started.
+
+[source,xml]
+.Maven usage
+----
+<properties>
+    <jcompute.version>...</jcompute.version>
+</properties>
+
+<dependency>
+    <groupId>jcompute</groupId>
+    <artifactId>jcompute-opencl-bytedeco</artifactId>
+    <version>${jcompute.version}</version>
+</dependency>
+<dependency>
+    <groupId>jcompute</groupId>
+    <artifactId>jcompute-opencl-jocl</artifactId>
+    <version>${jcompute.version}</version>
+</dependency>
+----

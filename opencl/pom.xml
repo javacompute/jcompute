@@ -24,14 +24,15 @@
 
     <parent>
         <groupId>jcompute</groupId>
-        <artifactId>jcompute-bom</artifactId>
+        <artifactId>jcompute-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
     </parent>
 
     <artifactId>jcompute-opencl</artifactId>
     <name>JCompute - OpenCL</name>
     <description>
-        JCompute - Thin layer of abstraction on top of OpenCL.
+        JCompute - Enables Java OpenCL programming.
     </description>
 
     <packaging>pom</packaging>

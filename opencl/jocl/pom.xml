@@ -31,7 +31,7 @@
     <artifactId>jcompute-opencl-jocl</artifactId>
     <name>JCompute - OpenCL (JOCL Binding)</name>
     <description>
-        JCompute - Thin layer of abstraction on top of OpenCL.
+        JCompute - OpenCL to Java Binding via JOCL.
     </description>
 
     <properties>
@@ -43,8 +43,9 @@
 
         <dependency>
             <groupId>jcompute</groupId>
-            <artifactId>jcompute-core</artifactId>
+            <artifactId>jcompute-base</artifactId>
         </dependency>
+
         <dependency>
             <groupId>jcompute</groupId>
             <artifactId>jcompute-opencl-applib</artifactId>
@@ -54,12 +55,6 @@
             <groupId>org.jocl</groupId>
             <artifactId>jocl</artifactId>
             <version>2.0.5</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
         </dependency>
 
     </dependencies>

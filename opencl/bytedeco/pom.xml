@@ -31,7 +31,7 @@
     <artifactId>jcompute-opencl-bytedeco</artifactId>
     <name>JCompute - OpenCL (ByteDeco Binding)</name>
     <description>
-        JCompute - Thin layer of abstraction on top of OpenCL.
+        JCompute - OpenCL to Java Binding via ByteDeco.
     </description>
 
     <properties>
@@ -43,7 +43,7 @@
 
         <dependency>
             <groupId>jcompute</groupId>
-            <artifactId>jcompute-core</artifactId>
+            <artifactId>jcompute-base</artifactId>
         </dependency>
         <dependency>
             <groupId>jcompute</groupId>
@@ -59,12 +59,6 @@
             <groupId>org.bytedeco</groupId>
             <artifactId>javacpp-platform</artifactId>
             <version>1.5.10</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
         </dependency>
 
     </dependencies>

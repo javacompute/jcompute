@@ -1,0 +1,27 @@
+= About
+
+JCompute provides basic building blocks for efficient computation with Java.
+
+The project started in October 2023.
+
+Aspects of interest: 
+
+* Thin Java API on top of OpenCL (GPU compute)
+* Graph Theory
+* Cartesian Product
+* Set Covering
+
+JCompute Source Code Repository: https://github.com/univie-nutrition/dita[GitHub]
+
+== Technology Stack
+
+* Java - Programming Language
+* OpenCL - Open Computing Language - https://registry.khronos.org/OpenCL/sdk/3.0/docs/man/html/
+
+== Examples
+
+* xref:examples/MandelSet.adoc[MandelSet]
+* xref:examples/SetCovering.adoc[SetCovering]
+
+== License
+Dita is _Open Source_ software released under the https://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license].

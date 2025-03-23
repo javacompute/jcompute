@@ -1,0 +1,19 @@
+= Modules
+
+_JCompute_ modules and sub-modules.
+
+[plantuml,fig-modules,svg]
+.JCompute Modules
+----
+@startwbs
+
+* Modules
+** Base
+** Combinatorics
+** OpenCL
+*** applib
+*** bytedeco (Binding)
+*** jocl (Binding)
+
+@endwbs
+---- 

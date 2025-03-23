@@ -1,0 +1,9 @@
+= Combinatorics
+
+[cols="1m,5a"]
+|===
+
+| jcompute-combinatorics
+| Provides data structures for _Cartesian Product_, _Graph_ 
+
+|===

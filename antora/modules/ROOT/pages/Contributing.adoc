@@ -1,0 +1,5 @@
+= You’re Invited!
+
+In the spirit of open source software, everyone is welcome to contribute to this project!
+
+Thanks for considering to help out, your contributions are appreciated!

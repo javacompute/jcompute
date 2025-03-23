@@ -24,8 +24,9 @@
 
     <parent>
         <groupId>jcompute</groupId>
-        <artifactId>jcompute-bom</artifactId>
+        <artifactId>jcompute-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
     </parent>
 
     <artifactId>jcompute-combinatorics</artifactId>
@@ -43,19 +44,13 @@
 
         <dependency>
             <groupId>jcompute</groupId>
-            <artifactId>jcompute-core</artifactId>
+            <artifactId>jcompute-base</artifactId>
         </dependency>
 
         <dependency>
             <groupId>jcompute</groupId>
             <artifactId>jcompute-opencl-applib</artifactId>
             <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
         </dependency>
         
         <!-- TESTING -->

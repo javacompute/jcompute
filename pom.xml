@@ -22,7 +22,7 @@ additional
 
     <name>JCompute</name>
     <description>JCompute (Umbrella)</description>
-    <url>https://github.com/andi-huber/jcompute</url>
+    <url>https://github.com/javacompute/jcompute</url>
 
     <packaging>pom</packaging>
 
@@ -35,77 +35,11 @@ additional
         <log4j.version>2.21.0</log4j.version>
 
         <lombok.version>1.18.37</lombok.version>
+        <tukaani-xz.version>1.10</tukaani-xz.version>
 
         <!-- testing -->
         <junit.version>5.12.1</junit.version>
-        <surefire-plugin.argLine>-Xmx384m</surefire-plugin.argLine>
     </properties>
-
-    <build>
-        <resources>
-            <resource>
-                <filtering>false</filtering>
-                <directory>src/main/resources</directory>
-            </resource>
-            <resource>
-                <filtering>false</filtering>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**</include>
-                </includes>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
-            </resource>
-        </resources>
-        <testResources>
-            <testResource>
-                <filtering>false</filtering>
-                <directory>src/test/java</directory>
-                <excludes>
-                    <exclude>**/*.java</exclude>
-                </excludes>
-            </testResource>
-        </testResources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.14.0</version>
-                <configuration>
-                    <release>${maven.compiler.release}</release>
-                    <compilerArgs>
-                        <arg>${maven.compiler.arg}</arg>
-                    </compilerArgs>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <printSummary>false</printSummary>
-                    <argLine>${surefire-plugin.argLine}</argLine>
-                    <forkCount>1C</forkCount>
-                    <reuseForks>true</reuseForks>
-                    <systemPropertyVariables>
-                        <!-- allows tests to reduce verbosity, or conditionally
-                        disable
-                                 when run with surefire; e.g.:
-                                 @DisabledIfSystemProperty(named = "isRunningWithSurefire", matches = "true")
-                                 -->
-                        <isRunningWithSurefire>true</isRunningWithSurefire>
-                    </systemPropertyVariables>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <dependencyManagement>
         <dependencies>
@@ -114,7 +48,13 @@ additional
 
             <dependency>
                 <groupId>jcompute</groupId>
-                <artifactId>jcompute-core</artifactId>
+                <artifactId>jcompute-parent</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jcompute</groupId>
+                <artifactId>jcompute-base</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
 
@@ -187,7 +127,7 @@ additional
             <dependency>
                 <groupId>org.tukaani</groupId>
                 <artifactId>xz</artifactId>
-                <version>1.10</version>
+                <version>${tukaani-xz.version}</version>
             </dependency>
 
             <!-- TESTING -->
@@ -237,7 +177,8 @@ additional
     </dependencies>
 
     <modules>
-        <module>core</module>
+        <module>parent</module>
+        <module>base</module>
         <module>opencl</module>
         <module>combinatorics</module>
     </modules>
@@ -246,22 +187,22 @@ additional
 
     <inceptionYear>Oct 2023</inceptionYear>
     <scm>
-        <url>https://github.com/andi-huber/jcompute</url>
+        <url>https://github.com/javacompute/jcompute</url>
         <tag>HEAD</tag>
     </scm>
     <issueManagement>
         <system>Github</system>
-        <url>https://github.com/andi-huber/jcompute</url>
+        <url>https://github.com/javacompute/jcompute</url>
     </issueManagement>
     <ciManagement>
         <system>CI</system>
-        <url>https://github.com/andi-huber/jcompute</url>
+        <url>https://github.com/javacompute/jcompute</url>
     </ciManagement>
     <developers>
         <developer>
             <id>ahuber</id>
             <name>Andi Huber</name>
-            <email>a.huber@corax.at</email>
+            <email>ahuber@apache.org</email>
             <roles>
                 <role>committer</role>
             </roles>
