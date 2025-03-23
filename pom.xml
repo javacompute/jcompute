@@ -16,7 +16,7 @@ additional
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>jcompute</groupId>
+    <groupId>io.github.javacompute</groupId>
     <artifactId>jcompute-bom</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
@@ -31,8 +31,10 @@ additional
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <bytedeco.version>1.5.11</bytedeco.version>
-        <commons-compress.version>1.27.1</commons-compress.version>
-        <log4j.version>2.24.3</log4j.version>
+        <commons-compress.version>1.26.2</commons-compress.version>
+        
+        <jocl.version>2.0.5</jocl.version>
+        <log4j.version>2.21.0</log4j.version>
 
         <lombok.version>1.18.37</lombok.version>
         <tukaani-xz.version>1.10</tukaani-xz.version>
@@ -47,44 +49,38 @@ additional
             <!-- SUB MODULES -->
 
             <dependency>
-                <groupId>jcompute</groupId>
+                <groupId>io.github.javacompute</groupId>
                 <artifactId>jcompute-parent</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
 
             <dependency>
-                <groupId>jcompute</groupId>
+                <groupId>io.github.javacompute</groupId>
                 <artifactId>jcompute-base</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
 
             <dependency>
-                <groupId>jcompute</groupId>
+                <groupId>io.github.javacompute</groupId>
                 <artifactId>jcompute-opencl-applib</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
 
             <dependency>
-                <groupId>jcompute</groupId>
+                <groupId>io.github.javacompute</groupId>
                 <artifactId>jcompute-opencl-bytedeco</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
 
             <dependency>
-                <groupId>jcompute</groupId>
+                <groupId>io.github.javacompute</groupId>
                 <artifactId>jcompute-opencl-jocl</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
 
             <dependency>
-                <groupId>jcompute</groupId>
+                <groupId>io.github.javacompute</groupId>
                 <artifactId>jcompute-combinatorics</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
-            </dependency>
-
-            <dependency>
-                <groupId>jcompute</groupId>
-                <artifactId>jcompute-tukaani</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
 
@@ -98,8 +94,22 @@ additional
 
             <dependency>
                 <groupId>org.bytedeco</groupId>
+                <artifactId>javacpp-platform</artifactId>
+                <version>${bytedeco.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.bytedeco</groupId>
                 <artifactId>opencl-platform</artifactId>
                 <version>3.0-${bytedeco.version}</version>
+            </dependency>
+
+            <!-- JOCL -->
+
+            <dependency>
+                <groupId>org.jocl</groupId>
+                <artifactId>jocl</artifactId>
+                <version>${jocl.version}</version>
             </dependency>
 
             <!-- APACHE -->
@@ -130,51 +140,8 @@ additional
                 <version>${tukaani-xz.version}</version>
             </dependency>
 
-            <!-- TESTING -->
-
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-api</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-params</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-
         </dependencies>
     </dependencyManagement>
-
-    <dependencies>
-
-        <!-- TESTING -->
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-    </dependencies>
 
     <modules>
         <module>parent</module>

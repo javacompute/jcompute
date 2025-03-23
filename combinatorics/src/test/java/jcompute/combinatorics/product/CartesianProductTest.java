@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package jcompute.combinatorics.finspace;
+package jcompute.combinatorics.product;
 
 import java.util.concurrent.atomic.LongAdder;
 
@@ -24,37 +24,38 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import jcompute.combinatorics.product.CartesianProduct4;
-import jcompute.combinatorics.product.CartesianProductN;
-
-class FiniteSpaceTest {
+class CartesianProductTest {
 
     @Test
     void generic() {
-        var fs = new CartesianProductN(16, 2, 3, 4);
-        assertEquals(16*2*3*4, fs.cardinality().intValueExact());
+        var fs = new CartesianProductN(16, 2, 3, 4, 5);
+        assertEquals(16*2*3*4*5, fs.cardinality().intValueExact());
 
         var adder = new LongAdder();
-        fs.forEachSequential(v->adder.add(1000 + 100*v[0] + 10*v[1] + v[2]));
-        assertEquals(674304, adder.intValue());
+        fs.forEachSequential(v->adder.add(hash(v)));
+        assertEquals(337184640L, adder.longValue());
 
         adder.reset();
-        fs.forEachParallel(v->adder.add(1000 + 100*v[0] + 10*v[1] + v[2]));
-        assertEquals(674304, adder.intValue());
+        fs.forEachParallel(v->adder.add(hash(v)));
+        assertEquals(337184640L, adder.longValue());
     }
 
     @Test
-    void n4() {
-        var fs = new CartesianProduct4(16, 2, 3, 4);
-        assertEquals(16*2*3*4, fs.cardinality().intValueExact());
+    void n5() {
+        var fs = new CartesianProduct5(16, 2, 3, 4, 5);
+        assertEquals(16*2*3*4*5, fs.cardinality().intValueExact());
 
         var adder = new LongAdder();
-        fs.forEachSequential(v->adder.add(1000 + 100*v[0] + 10*v[1] + v[2]));
-        assertEquals(674304, adder.intValue());
+        fs.forEachSequential(v->adder.add(hash(v)));
+        assertEquals(337184640L, adder.longValue());
 
         adder.reset();
-        fs.forEachParallel(v->adder.add(1000 + 100*v[0] + 10*v[1] + v[2]));
-        assertEquals(674304, adder.intValue());
+        fs.forEachParallel(v->adder.add(hash(v)));
+        assertEquals(337184640L, adder.longValue());
+    }
+
+    int hash(final int...v) {
+        return 100_000 + 10_000*v[0] + 1000*v[1] + 100*v[2] + 10*v[3] + v[4];
     }
 
 }

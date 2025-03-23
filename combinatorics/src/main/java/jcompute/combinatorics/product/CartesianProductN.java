@@ -108,18 +108,18 @@ public record CartesianProductN(int ...dim) implements CartesianProduct {
     private record RecursiveVisitor(int[] dim, int[] v, MultiIntConsumer intConsumer) {
         void recur(final int dimIndex){
             if(dimIndex == v.length-4) {
-                final int lRange = dim[dimIndex-3];
+                final int lRange = dim[dimIndex];
                 for(int l=0; l<lRange; ++l){
-                    v[dimIndex-3] = l;
-                    final int kRange = dim[dimIndex-2];
+                    v[dimIndex] = l;
+                    final int kRange = dim[dimIndex+1];
                     for(int k=0; k<kRange; ++k){
-                        v[dimIndex-2] = k;
-                        final int jRange = dim[dimIndex-1];
+                        v[dimIndex+1] = k;
+                        final int jRange = dim[dimIndex+2];
                         for(int j=0; j<jRange; ++j){
-                            v[dimIndex-1] = j;
-                            final int iRange = dim[dimIndex];
+                            v[dimIndex+2] = j;
+                            final int iRange = dim[dimIndex+3];
                             for(int i=0; i<iRange; ++i){
-                                v[dimIndex] = i;
+                                v[dimIndex+3] = i;
                                 intConsumer.accept(v);
                             }
                         }
@@ -166,18 +166,18 @@ public record CartesianProductN(int ...dim) implements CartesianProduct {
     private record RecursiveWhile(int[] dim, int[] v, MultiIntPredicate condition, AtomicBoolean stop) {
         void recur(final int dimIndex){
             if(dimIndex == v.length-4) {
-                final int lRange = dim[dimIndex-3];
+                final int lRange = dim[dimIndex];
                 for(int l=0; l<lRange; ++l){
-                    v[dimIndex-3] = l;
-                    final int kRange = dim[dimIndex-2];
+                    v[dimIndex] = l;
+                    final int kRange = dim[dimIndex+1];
                     for(int k=0; k<kRange; ++k){
-                        v[dimIndex-2] = k;
-                        final int jRange = dim[dimIndex-1];
+                        v[dimIndex+1] = k;
+                        final int jRange = dim[dimIndex+2];
                         for(int j=0; j<jRange; ++j){
-                            v[dimIndex-1] = j;
-                            final int iRange = dim[dimIndex];
+                            v[dimIndex+2] = j;
+                            final int iRange = dim[dimIndex+3];
                             for(int i=0; i<iRange; ++i){
-                                v[dimIndex] = i;
+                                v[dimIndex+3] = i;
                                 if(!condition.test(v)) {
                                     stop.set(true);
                                     return;

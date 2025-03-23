@@ -23,7 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>jcompute</groupId>
+        <groupId>io.github.javacompute</groupId>
         <artifactId>jcompute-bom</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
@@ -38,7 +38,11 @@
     <packaging>pom</packaging>
 
     <properties>
+        <maven.compiler.release>24</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- testing -->
         <surefire-plugin.argLine>-Xmx384m</surefire-plugin.argLine>
+        <junit.version>5.12.1</junit.version>
     </properties>
 
     <build>
@@ -108,6 +112,30 @@
         </plugins>
     </build>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- TESTING -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
 
         <dependency>
@@ -120,6 +148,24 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- TESTING -->
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

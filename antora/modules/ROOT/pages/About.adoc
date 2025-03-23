@@ -1,4 +1,4 @@
-= About
+= JCompute
 
 image:https://javacompute.github.io/jcompute/jcompute.png[jcompute,120,120]
 
