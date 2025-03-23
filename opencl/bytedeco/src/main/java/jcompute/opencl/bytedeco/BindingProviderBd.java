@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.bytedeco.javacpp.PointerPointer;
 import org.bytedeco.opencl._cl_platform_id;
+import org.bytedeco.opencl.global.OpenCL;
 
 import static org.bytedeco.opencl.global.OpenCL.clGetPlatformIDs;
 
@@ -60,9 +61,8 @@ public final class BindingProviderBd implements OpenCLBindingProvider {
         var outPlatformCount = new int[1];
 
         // count available OpenCL platforms
-        _Util.assertSuccess(
-                clGetPlatformIDs(0, (PointerPointer<?>)null, outPlatformCount),
-                ()->"failed to call clGetPlatformIDs");
+        var ret = clGetPlatformIDs(0, (PointerPointer<?>)null, outPlatformCount);
+        if(ret!=OpenCL.CL_SUCCESS) return List.of();
 
         final int platformCount = outPlatformCount[0];
 

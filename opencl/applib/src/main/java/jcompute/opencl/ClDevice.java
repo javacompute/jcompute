@@ -19,6 +19,8 @@
 package jcompute.opencl;
 
 import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import lombok.AccessLevel;
@@ -43,14 +45,17 @@ public abstract class ClDevice {
                 .flatMap(platform->platform.getDevices().stream());
     }
 
-    public static ClDevice getDefault() {
+    public static Optional<ClDevice> getDefault() {
         return getBest(_Util.getDefaultClPreferredDeviceComparator());
     }
 
-    public static ClDevice getBest(final Comparator<ClDevice> deviceComparator) {
-        var best = new ClDevice[] {null};
+    public static ClDevice getDefaultOrElseFail() {
+        return getDefault().orElseThrow(()->new NoSuchElementException("could not find an ClDevice"));
+    }
+
+    public static Optional<ClDevice> getBest(final Comparator<ClDevice> deviceComparator) {
         return streamAll()
-                .reduce(best[0], (a, b)->deviceComparator.compare(a, b)>=0 ? a : b);
+                .reduce((a, b)->deviceComparator.compare(a, b)>=0 ? a : b);
     }
 
     @Getter private final ClPlatform platform;

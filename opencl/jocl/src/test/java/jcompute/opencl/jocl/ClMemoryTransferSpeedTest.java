@@ -61,47 +61,51 @@ class ClMemoryTransferSpeedTest {
                 mem.fill(gid->gid);
             });
 
-            /* Create OpenCL Context */
-            try(var cl = ClDevice.getDefault().createContext()) {
+            ClDevice.getDefault().ifPresent(device->{
+                /* Create OpenCL Context */
+                try(var cl = device.createContext()) {
 
-                System.err.printf("running inc on %s ...%n", cl);
+                    System.err.printf("running inc on %s ...%n", cl);
 
-                // Create Command Queue
-                var queue = cl.createQueue();
-                System.err.printf("  + queue created%n");
+                    // Create Command Queue
+                    var queue = cl.createQueue();
+                    System.err.printf("  + queue created%n");
 
-                // Create Kernel program from the read in source
-                var program = cl.createProgram(INC_SRC);
-                System.err.printf("  + program created%n");
+                    // Create Kernel program from the read in source
+                    var program = cl.createProgram(INC_SRC);
+                    System.err.printf("  + program created%n");
 
-                // Create OpenCL Kernel
-                var kernel = program.createKernel("inc");
-                System.err.printf("  + kernel created%n");
+                    // Create OpenCL Kernel
+                    var kernel = program.createKernel("inc");
+                    System.err.printf("  + kernel created%n");
 
-                // Create memory buffer
-                var memObj = cl.createMemoryReadWrite(mem);
-                System.err.printf("  + mem buf created%n");
+                    // Create memory buffer
+                    var memObj = cl.createMemoryReadWrite(mem);
+                    System.err.printf("  + mem buf created%n");
 
-                // Set OpenCL kernel argument
-                kernel.setArgs(memObj);
-                System.err.printf("  + kernel args set%n");
+                    // Set OpenCL kernel argument
+                    kernel.setArgs(memObj);
+                    System.err.printf("  + kernel args set%n");
 
-                measure("  enqueue-write", ()->{
-                    queue.enqueueWriteBuffer(memObj);
+                    measure("  enqueue-write", ()->{
+                        queue.enqueueWriteBuffer(memObj);
+                    });
+
+                    measure("  enqueue-run-kernel", ()->{
+                        queue.enqueueNDRangeKernel(kernel, mem.shape());
+                    });
+
+                    measure("  enqueue-read", ()->{
+                        queue.enqueueReadBuffer(memObj);
+                    });
+                }
+
+                measure("validate-data-on-host", ()->{
+                    validate(mem);
                 });
 
-                measure("  enqueue-run-kernel", ()->{
-                    queue.enqueueNDRangeKernel(kernel, mem.shape());
-                });
-
-                measure("  enqueue-read", ()->{
-                    queue.enqueueReadBuffer(memObj);
-                });
-            }
-
-            measure("validate-data-on-host", ()->{
-                validate(mem);
             });
+
         }
     }
 

@@ -68,15 +68,20 @@ class SetCoverTest {
 
             setup(arena);
 
-            var setCover = new SetCoverKernels.OpenCL64Bit(ClDevice.getDefault(), setCoverParams, outputMem);
+            ClDevice.getDefault().ifPresent(clDevice->{
 
-            //for (int i = 0; i < 100; i++) {
-                Timing.run("gpu", ()->{
-                    setCover.run();
-                });
-            //}
+                var setCover = new SetCoverKernels.OpenCL64Bit(clDevice, setCoverParams, outputMem);
 
-            validate();
+                //for (int i = 0; i < 100; i++) {
+                    Timing.run("gpu", ()->{
+                        setCover.run();
+                    });
+                //}
+
+                validate();
+
+            });
+
         }
 
     }

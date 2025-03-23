@@ -61,8 +61,9 @@ class ClPlatformTest {
 
     @Test
     void defaultDevice() {
-        var device = ClDevice.getDefault();
-        assertEquals(DeviceType.GPU, device.getType());
+        ClDevice.getDefault().ifPresent(device->{
+            assertEquals(DeviceType.GPU, device.getType());
+        });
     }
 
 }

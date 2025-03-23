@@ -19,6 +19,7 @@
 package jcompute.opencl.bytedeco;
 
 import java.lang.foreign.Arena;
+import java.util.Optional;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -45,12 +46,12 @@ class ClMemoryTransferSpeedTest2 {
             }
             """;
 
-    static ClContext cl;
+    static Optional<ClContext> CL;
     @BeforeAll static void setup() {
-        cl = ClDevice.getDefault().createContext();
+        CL = ClDevice.getDefault().map(ClDevice::createContext);
     }
     @AfterAll static void close() {
-        if(cl!=null) cl.close();
+        if(CL!=null) CL.ifPresent(ClContext::close);
     }
 
     @ParameterizedTest
@@ -61,6 +62,9 @@ class ClMemoryTransferSpeedTest2 {
     })
     void memTransferReuseDeviceContext(final int n) {
         this.n = n;
+
+        var cl = CL.orElse(null);
+        if(cl==null) return;
 
         System.out.printf("--- TEST n=%.1fM%n", 0.000001*n);
 
