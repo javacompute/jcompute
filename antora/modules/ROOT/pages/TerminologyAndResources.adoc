@@ -1,3 +1,75 @@
 = Terminology and Resources
 
-TODO
+OpenCL 2.1 Quick Ref Card: https://www.khronos.org/registry/cl/sdk/2.1/docs/OpenCL-2.1-refcard.pdf
+
+== Java Transpiler
+* Aparapi: https://github.com/Syncleus/aparapi
+* TornadoVM: https://github.com/beehive-lab/TornadoVM
+** Example Kernels: https://github.com/beehive-lab/TornadoVM/blob/master/benchmarks/src/main/java/uk/ac/manchester/tornado/benchmarks/ComputeKernels.java
+
+== Java Bindings
+
+=== JavaCPP(org.bytedeco)
+* OpenCL: 3.0 
+* Baseline: Java 7 SE
+* Project: https://github.com/bytedeco/javacpp-presets/tree/master/opencl
+* Maven: https://mvnrepository.com/artifact/org.bytedeco/opencl
+* Used by: JCompute
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.bytedeco</groupId>
+    <artifactId>opencl-platform</artifactId>
+    <version>3.0-1.5.7</version>
+</dependency>
+----
+
+=== Jocl (jogamp)
+* OpenCL: 1.1 
+* Built with: 1.8.0_60-b27
+* Project: https://jogamp.org/jocl/www/
+* Maven: https://mvnrepository.com/artifact/org.jogamp.jocl/jocl
+* Used by: JCompute
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.jogamp.jocl</groupId>
+    <artifactId>jocl</artifactId>
+    <version>2.3.2</version>
+</dependency>
+----
+
+=== Jocl (org.jocl)
+* OpenCL: 1.1 (1.2 = ?)
+* Built with: 1.8.0_261
+* Project: http://www.jocl.org/
+* Maven: https://mvnrepository.com/artifact/org.jocl/jocl
+* Used by: Bytecoder
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.jocl</groupId>
+    <artifactId>jocl</artifactId>
+    <version>2.0.4</version>
+</dependency>
+----
+
+=== Nativelibs4java/JavaCL
+* OpenCL 1.1 (1.2 = ?)
+* Built with: 1.8.0_31
+* Project: https://github.com/nativelibs4java/JavaCL
+* Maven: https://mvnrepository.com/artifact/com.nativelibs4java/javacl
+* Used by: JScience
+
+[source,xml]
+----
+<dependency>
+    <groupId>com.nativelibs4java</groupId>
+    <artifactId>javacl</artifactId>
+    <version>1.0.0-RC4</version>
+</dependency>
+----
+

@@ -136,9 +136,9 @@ public interface IndexSpace {
                 dim[5], dim[6]);
             case 8 -> new IndexSpace8(dim[0], dim[1], dim[2], dim[3], dim[4],
                 dim[5], dim[6], dim[7]);
-//            case 8 -> new FiniteSpaceComposite(
-//                new FiniteSpace3(dim[0], dim[1], dim[2]),
-//                new FiniteSpace5(dim[3], dim[4], dim[5], dim[6], dim[7]));
+//            case 8 -> new IndexSpaceComposite(
+//                new IndexSpace3(dim[0], dim[1], dim[2]),
+//                new IndexSpace5(dim[3], dim[4], dim[5], dim[6], dim[7]));
             default -> new IndexSpaceN(dim);
         };
     }
