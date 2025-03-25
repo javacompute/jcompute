@@ -19,6 +19,7 @@
 package jcompute.combinatorics.product;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,7 +35,7 @@ import jcompute.core.util.function.MultiIntConsumer;
 import jcompute.core.util.function.MultiIntPredicate;
 import jcompute.core.util.function.PrefixedMultiIntConsumer;
 
-public record CartesianProductN(int ...dim) implements CartesianProduct {
+public record IndexSpaceN(int ...dim) implements IndexSpace {
 
     @Override public int indexCount() { return dim.length; }
     @Override public BigInteger cardinality() {
@@ -44,8 +45,8 @@ public record CartesianProductN(int ...dim) implements CartesianProduct {
     }
 
     @Override
-    public void reportIndexRanges(final MultiIntConsumer intConsumer) {
-        intConsumer.accept(dim);
+    public IntStream streamIndexRanges() {
+        return IntStream.of(dim);
     }
 
     @Override
@@ -54,6 +55,15 @@ public record CartesianProductN(int ...dim) implements CartesianProduct {
             var v = new int[dim.length];
             v[0] = i;
             new RecursiveVisitor(dim, v, intConsumer).recur(1);
+        });
+    }
+
+    @Override
+    public void forEach(final Visiting visiting, final MultiIntPredicate branchFilter, final MultiIntConsumer intConsumer) {
+        visiting.range(dim[0]).forEach(i->{
+            var v = new int[dim.length];
+            v[0] = i;
+            new RecursiveVisitorWithBranchFilter(dim, v, branchFilter, intConsumer).recur(1);
         });
     }
 
@@ -131,6 +141,48 @@ public record CartesianProductN(int ...dim) implements CartesianProduct {
                 v[dimIndex] = i;
                 recur(dimIndex + 1);
             }
+        }
+    }
+
+    private record RecursiveVisitorWithBranchFilter(
+            int[] dim,
+            int[] v,
+            MultiIntPredicate branchFilter,
+            MultiIntConsumer intConsumer) {
+        void recur(final int dimIndex){
+            if(dimIndex == v.length-4) {
+                final int lRange = dim[dimIndex];
+                for(int l=0; l<lRange; ++l){
+                    v[dimIndex] = l;
+                    if(!testBranch(v, dimIndex + 1)) continue;
+                    final int kRange = dim[dimIndex+1];
+                    for(int k=0; k<kRange; ++k){
+                        v[dimIndex+1] = k;
+                        if(!testBranch(v, dimIndex + 2)) continue;
+                        final int jRange = dim[dimIndex+2];
+                        for(int j=0; j<jRange; ++j){
+                            v[dimIndex+2] = j;
+                            if(!testBranch(v, dimIndex + 3)) continue;
+                            final int iRange = dim[dimIndex+3];
+                            for(int i=0; i<iRange; ++i){
+                                v[dimIndex+3] = i;
+                                if(!testBranch(v, dimIndex + 4)) continue;
+                                intConsumer.accept(v);
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+            for(int i=0; i<dim[dimIndex]; ++i){
+                v[dimIndex] = i;
+                if(testBranch(v, dimIndex + 1)) {
+                    recur(dimIndex + 1);
+                }
+            }
+        }
+        private boolean testBranch(final int[] v, final int len) {
+            return branchFilter.test(Arrays.copyOf(v, len));
         }
     }
 

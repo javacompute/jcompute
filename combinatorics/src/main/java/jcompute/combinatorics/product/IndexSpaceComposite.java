@@ -21,6 +21,7 @@ package jcompute.combinatorics.product;
 import java.math.BigInteger;
 import java.util.Optional;
 import java.util.function.IntFunction;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import jcompute.core.util.function.MultiIntConsumer;
@@ -28,7 +29,7 @@ import jcompute.core.util.function.MultiIntPredicate;
 import jcompute.core.util.function.PrefixedMultiIntConsumer;
 
 //experimental
-record CartesianProductComposite(CartesianProduct a, CartesianProduct b) implements CartesianProduct {
+record IndexSpaceComposite(IndexSpace a, IndexSpace b) implements IndexSpace {
 
     @Override public int indexCount() { return a.indexCount() + b.indexCount(); }
     @Override public BigInteger cardinality() {
@@ -37,11 +38,8 @@ record CartesianProductComposite(CartesianProduct a, CartesianProduct b) impleme
     }
 
     @Override
-    public void reportIndexRanges(final MultiIntConsumer intConsumer) {
-        var v = new int[indexCount()];
-        a.reportIndexRanges(r->System.arraycopy(r, 0, v, 0, r.length));
-        b.reportIndexRanges(r->System.arraycopy(r, 0, v, a.indexCount(), r.length));
-        intConsumer.accept(v);
+    public IntStream streamIndexRanges() {
+        return IntStream.concat(a.streamIndexRanges(), b.streamIndexRanges());
     }
 
     @Override
@@ -54,6 +52,11 @@ record CartesianProductComposite(CartesianProduct a, CartesianProduct b) impleme
                 intConsumer.accept(v);
             });
         });
+    }
+
+    @Override
+    public void forEach(final Visiting visiting, final MultiIntPredicate branchFilter, final MultiIntConsumer intConsumer) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

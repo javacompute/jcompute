@@ -23,30 +23,50 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.IntFunction;
 import java.util.stream.Gatherer;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import jcompute.core.util.function.MultiIntConsumer;
 import jcompute.core.util.function.MultiIntPredicate;
 import jcompute.core.util.function.PrefixedMultiIntConsumer;
 
-public record CartesianProduct2(int n0, int n1) implements CartesianProduct {
+public record IndexSpace4(int n0, int n1, int n2, int n3) implements IndexSpace {
 
-    @Override public int indexCount() { return 2; }
+    @Override public int indexCount() { return 4; }
     @Override public BigInteger cardinality() {
         return BigInteger.valueOf(n0)
-            .multiply(BigInteger.valueOf(n1));
+            .multiply(BigInteger.valueOf(n1))
+            .multiply(BigInteger.valueOf(n2))
+            .multiply(BigInteger.valueOf(n3));
     }
 
     @Override
-    public void reportIndexRanges(final MultiIntConsumer intConsumer) {
-        intConsumer.accept(n0, n1);
+    public IntStream streamIndexRanges() {
+        return IntStream.of(n0, n1, n2, n3);
     }
 
     @Override
     public void forEach(final Visiting visiting, final MultiIntConsumer intConsumer) {
         visiting.range(n0).forEach(i->{
             for(int j=0; j<n1; ++j){
-                intConsumer.accept(i, j);
+                for(int k=0; k<n2; ++k){
+                    for(int l=0; l<n3; ++l){
+                        intConsumer.accept(i, j, k, l);
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void forEach(final Visiting visiting, final MultiIntPredicate branchFilter, final MultiIntConsumer intConsumer) {
+        visiting.range(n0).forEach(i->{
+            if(branchFilter.test(i)) for(int j=0; j<n1; ++j){
+                if(branchFilter.test(i, j)) for(int k=0; k<n2; ++k){
+                    if(branchFilter.test(i, j, k)) for(int l=0; l<n3; ++l){
+                        if(branchFilter.test(i, j, k, l)) intConsumer.accept(i, j, k, l);
+                    }
+                }
             }
         });
     }
@@ -55,7 +75,7 @@ public record CartesianProduct2(int n0, int n1) implements CartesianProduct {
     public Stream<int[]> stream(final Visiting visiting) {
         return visiting.range(n0)
             .mapToObj(Integer::valueOf)
-            .gather(Gatherer.of(new Integrators.Integrator2(n1)));
+            .gather(Gatherer.of(new Integrators.Integrator4(n1, n2, n3)));
     }
 
     @Override
@@ -63,7 +83,11 @@ public record CartesianProduct2(int n0, int n1) implements CartesianProduct {
         return Visiting.PARALLEL.range(n0).mapToObj(i->{
             T t = collectorFactory.apply(i);
             for(int j=0; j<n1; ++j){
-                prefixedIntConsumer.accept(t, i, j);
+                for(int k=0; k<n2; ++k){
+                    for(int l=0; l<n3; ++l){
+                        prefixedIntConsumer.accept(t, i, j, k, l);
+                    }
+                }
             }
             return t;
         });
@@ -74,8 +98,12 @@ public record CartesianProduct2(int n0, int n1) implements CartesianProduct {
         return Visiting.PARALLEL.range(n0)
             .mapToObj(i->{
                 for(int j=0; j<n1; ++j){
-                    if(intPredicate.test(i, j)) {
-                        return new int[] {i, j};
+                    for(int k=0; k<n2; ++k){
+                        for(int l=0; l<n3; ++l){
+                            if(intPredicate.test(i, j, k, l)) {
+                                return new int[] {i, j, k, l};
+                            }
+                        }
                     }
                 }
                 return (int[]) null;

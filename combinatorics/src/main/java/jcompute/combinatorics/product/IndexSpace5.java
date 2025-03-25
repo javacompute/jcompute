@@ -23,27 +23,27 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.IntFunction;
 import java.util.stream.Gatherer;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import jcompute.core.util.function.MultiIntConsumer;
 import jcompute.core.util.function.MultiIntPredicate;
 import jcompute.core.util.function.PrefixedMultiIntConsumer;
 
-public record CartesianProduct6(int n0, int n1, int n2, int n3, int n4, int n5) implements CartesianProduct {
+public record IndexSpace5(int n0, int n1, int n2, int n3, int n4) implements IndexSpace {
 
-    @Override public int indexCount() { return 6; }
+    @Override public int indexCount() { return 5; }
     @Override public BigInteger cardinality() {
         return BigInteger.valueOf(n0)
             .multiply(BigInteger.valueOf(n1))
             .multiply(BigInteger.valueOf(n2))
             .multiply(BigInteger.valueOf(n3))
-            .multiply(BigInteger.valueOf(n4))
-            .multiply(BigInteger.valueOf(n5));
+            .multiply(BigInteger.valueOf(n4));
     }
 
     @Override
-    public void reportIndexRanges(final MultiIntConsumer intConsumer) {
-        intConsumer.accept(n0, n1, n2, n3, n4, n5);
+    public IntStream streamIndexRanges() {
+        return IntStream.of(n0, n1, n2, n3, n4);
     }
 
     @Override
@@ -53,9 +53,22 @@ public record CartesianProduct6(int n0, int n1, int n2, int n3, int n4, int n5) 
                 for(int k=0; k<n2; ++k){
                     for(int l=0; l<n3; ++l){
                         for(int m=0; m<n4; ++m){
-                            for(int n=0; n<n5; ++n){
-                                intConsumer.accept(i, j, k, l, m, n);
-                            }
+                            intConsumer.accept(i, j, k, l, m);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void forEach(final Visiting visiting, final MultiIntPredicate branchFilter, final MultiIntConsumer intConsumer) {
+        visiting.range(n0).forEach(i->{
+            if(branchFilter.test(i)) for(int j=0; j<n1; ++j){
+                if(branchFilter.test(i, j)) for(int k=0; k<n2; ++k){
+                    if(branchFilter.test(i, j, k)) for(int l=0; l<n3; ++l){
+                        if(branchFilter.test(i, j, k, l)) for(int m=0; m<n4; ++m){
+                            if(branchFilter.test(i, j, k, l, m)) intConsumer.accept(i, j, k, l, m);
                         }
                     }
                 }
@@ -67,7 +80,7 @@ public record CartesianProduct6(int n0, int n1, int n2, int n3, int n4, int n5) 
     public Stream<int[]> stream(final Visiting visiting) {
         return visiting.range(n0)
             .mapToObj(Integer::valueOf)
-            .gather(Gatherer.of(new Integrators.Integrator6(n1, n2, n3, n4, n5)));
+            .gather(Gatherer.of(new Integrators.Integrator5(n1, n2, n3, n4)));
     }
 
     @Override
@@ -78,9 +91,7 @@ public record CartesianProduct6(int n0, int n1, int n2, int n3, int n4, int n5) 
                 for(int k=0; k<n2; ++k){
                     for(int l=0; l<n3; ++l){
                         for(int m=0; m<n4; ++m){
-                            for(int n=0; n<n5; ++n){
-                                prefixedIntConsumer.accept(t, i, j, k, l, m, n);
-                            }
+                            prefixedIntConsumer.accept(t, i, j, k, l, m);
                         }
                     }
                 }
@@ -97,10 +108,8 @@ public record CartesianProduct6(int n0, int n1, int n2, int n3, int n4, int n5) 
                     for(int k=0; k<n2; ++k){
                         for(int l=0; l<n3; ++l){
                             for(int m=0; m<n4; ++m){
-                                for(int n=0; n<n5; ++n){
-                                    if(intPredicate.test(i, j, k, l, m, n)) {
-                                        return new int[] {i, j, k, l, m, n};
-                                    }
+                                if(intPredicate.test(i, j, k, l, m)) {
+                                    return new int[] {i, j, k, l, m};
                                 }
                             }
                         }

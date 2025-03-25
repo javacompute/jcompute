@@ -28,24 +28,20 @@ import jcompute.core.util.function.MultiIntConsumer;
 import jcompute.core.util.function.MultiIntPredicate;
 import jcompute.core.util.function.PrefixedMultiIntConsumer;
 
-///Given multiple indices, a product space is spanned with index ranges `n0` x `n1` x ...
+///Given multiple indices, an index space is spanned with index ranges `n0` x `n1` x ...
 ///
 ///For indices `i` ranging from 0 to `(n0-1)`, `j` from 0 to `(n1-1)`, and so on,
 ///the Cartesian product forms all possible ordered tuples `(i, j, k, ...)`.
 ///
 ///Example:
 /// ```
-///  // print all 3 x 2 (ordered) tuples
-///  var cps = CartesianProduct.create(3, 2);
-///  cps.forEachSequential(v->System.out.println("tuple: %d, %d".formatted(v[0], v[1])));
+///  // print all 3 x 2 (index) tuples
+///  var indexSpace = IndexSpace.create(3, 2);
+///  indexSpace.forEachSequential(tuple->System.out.println("tuple: %d, %d".formatted(tuple[0], tuple[1])));
 /// ```
 ///Caveats / Future Work:
-///- no `Stream<int[]>` creation
-///- no branch pruning support
-///- no computation cancellation support
-///- no progress indication callback support
-///- `CartesianProductN` (n>8) is slow
-public interface CartesianProduct {
+///- no branch filtering
+public interface IndexSpace {
 
     enum Visiting {
         SEQUENTIAL{
@@ -64,33 +60,56 @@ public interface CartesianProduct {
     }
 
     /**
-     * Number of distinct tuples in this space.
+     * Number of distinct tuples of this space.
      */
     BigInteger cardinality();
     /**
-     * Number of indices (dimensions) this space has.
+     * Number of indices (dimensions) of this space.
      */
     int indexCount();
     /**
-     * Reports the index ranges to the consumer. (single call)
+     * Streams the index ranges, that is the size of all the dimensions of this space.
      */
-    void reportIndexRanges(MultiIntConsumer intConsumer);
+    IntStream streamIndexRanges();
 
     /**
      * Visits all distinct tuples.
      */
     void forEach(Visiting visiting, MultiIntConsumer intConsumer);
+    /**
+     * Visits all distinct tuples, that pass given branchFilter.
+     */
+    void forEach(Visiting visiting, MultiIntPredicate branchFilter, MultiIntConsumer intConsumer);
+
+    /**
+     * Streams all distinct tuples.
+     */
+    Stream<int[]> stream(Visiting visiting);
+
+    /**
+     * Creates a collector for each possible integer of the first dimension, then streams them after they passed given prefixedIntConsumer.
+     */
+    <T> Stream<T> streamCollectors(final IntFunction<T> collectorFactory, final PrefixedMultiIntConsumer<T> prefixedIntConsumer);
+
+    /**
+     * Visits up to all distinct tuples, optionally returning any that matches given predicate.
+     */
+    Optional<int[]> findAny(MultiIntPredicate intPredicate);
+
+    // -- SHORTCUTS
+
     default void forEachSequential(final MultiIntConsumer intConsumer) {
         forEach(Visiting.SEQUENTIAL, intConsumer);
     }
     default void forEachParallel(final MultiIntConsumer intConsumer) {
         forEach(Visiting.PARALLEL, intConsumer);
     }
-
-    /**
-     * Streams all distinct tuples.
-     */
-    Stream<int[]> stream(Visiting visiting);
+    default void forEachSequential(final MultiIntPredicate branchFilter, final MultiIntConsumer intConsumer) {
+        forEach(Visiting.SEQUENTIAL, branchFilter, intConsumer);
+    }
+    default void forEachParallel(final MultiIntPredicate branchFilter, final MultiIntConsumer intConsumer) {
+        forEach(Visiting.PARALLEL, branchFilter, intConsumer);
+    }
     default Stream<int[]> streamSequential() {
         return stream(Visiting.SEQUENTIAL);
     }
@@ -98,41 +117,29 @@ public interface CartesianProduct {
         return stream(Visiting.PARALLEL);
     }
 
-    /**
-     * Creates a collector for each possible integer of the first dimension, then streams them after they passed given prefixedIntConsumer.
-     */
-    <T> Stream<T> streamCollectors(final IntFunction<T> collectorFactory, final PrefixedMultiIntConsumer<T> prefixedIntConsumer);
+    // -- FACTORY
 
-
-
-    /**
-     * Visits up to all distinct tuples, optionally returning any that matches given predicate.
-     */
-    Optional<int[]> findAny(MultiIntPredicate intPredicate);
-
-    // -- Factory
-
-    public static CartesianProduct create(final int... dim) {
+    public static IndexSpace create(final int... dim) {
         if(dim==null
             || dim.length==0
-            || IntStream.of(dim).anyMatch(size->size<=0)) return new CartesianProduct0();
+            || IntStream.of(dim).anyMatch(size->size<=0)) return new IndexSpace0();
 
         return switch (dim.length) {
-            case 1 -> new CartesianProduct1(dim[0]);
-            case 2 -> new CartesianProduct2(dim[0], dim[1]);
-            case 3 -> new CartesianProduct3(dim[0], dim[1], dim[2]);
-            case 4 -> new CartesianProduct4(dim[0], dim[1], dim[2], dim[3]);
-            case 5 -> new CartesianProduct5(dim[0], dim[1], dim[2], dim[3], dim[4]);
-            case 6 -> new CartesianProduct6(dim[0], dim[1], dim[2], dim[3], dim[4],
+            case 1 -> new IndexSpace1(dim[0]);
+            case 2 -> new IndexSpace2(dim[0], dim[1]);
+            case 3 -> new IndexSpace3(dim[0], dim[1], dim[2]);
+            case 4 -> new IndexSpace4(dim[0], dim[1], dim[2], dim[3]);
+            case 5 -> new IndexSpace5(dim[0], dim[1], dim[2], dim[3], dim[4]);
+            case 6 -> new IndexSpace6(dim[0], dim[1], dim[2], dim[3], dim[4],
                 dim[5]);
-            case 7 -> new CartesianProduct7(dim[0], dim[1], dim[2], dim[3], dim[4],
+            case 7 -> new IndexSpace7(dim[0], dim[1], dim[2], dim[3], dim[4],
                 dim[5], dim[6]);
-            case 8 -> new CartesianProduct8(dim[0], dim[1], dim[2], dim[3], dim[4],
+            case 8 -> new IndexSpace8(dim[0], dim[1], dim[2], dim[3], dim[4],
                 dim[5], dim[6], dim[7]);
 //            case 8 -> new FiniteSpaceComposite(
 //                new FiniteSpace3(dim[0], dim[1], dim[2]),
 //                new FiniteSpace5(dim[3], dim[4], dim[5], dim[6], dim[7]));
-            default -> new CartesianProductN(dim);
+            default -> new IndexSpaceN(dim);
         };
     }
 

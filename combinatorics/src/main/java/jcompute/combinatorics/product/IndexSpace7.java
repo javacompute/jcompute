@@ -23,13 +23,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.IntFunction;
 import java.util.stream.Gatherer;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import jcompute.core.util.function.MultiIntConsumer;
 import jcompute.core.util.function.MultiIntPredicate;
 import jcompute.core.util.function.PrefixedMultiIntConsumer;
 
-public record CartesianProduct7(int n0, int n1, int n2, int n3, int n4, int n5, int n6) implements CartesianProduct {
+public record IndexSpace7(int n0, int n1, int n2, int n3, int n4, int n5, int n6) implements IndexSpace {
 
     @Override public int indexCount() { return 7; }
     @Override public BigInteger cardinality() {
@@ -43,8 +44,8 @@ public record CartesianProduct7(int n0, int n1, int n2, int n3, int n4, int n5, 
     }
 
     @Override
-    public void reportIndexRanges(final MultiIntConsumer intConsumer) {
-        intConsumer.accept(n0, n1, n2, n3, n4, n5, n6);
+    public IntStream streamIndexRanges() {
+        return IntStream.of(n0, n1, n2, n3, n4, n5, n6);
     }
 
     @Override
@@ -57,6 +58,25 @@ public record CartesianProduct7(int n0, int n1, int n2, int n3, int n4, int n5, 
                             for(int n=0; n<n5; ++n){
                                 for(int o=0; o<n6; ++o){
                                     intConsumer.accept(i, j, k, l, m, n, o);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void forEach(final Visiting visiting, final MultiIntPredicate branchFilter, final MultiIntConsumer intConsumer) {
+        visiting.range(n0).forEach(i->{
+            if(branchFilter.test(i)) for(int j=0; j<n1; ++j){
+                if(branchFilter.test(i, j)) for(int k=0; k<n2; ++k){
+                    if(branchFilter.test(i, j, k)) for(int l=0; l<n3; ++l){
+                        if(branchFilter.test(i, j, k, l)) for(int m=0; m<n4; ++m){
+                            if(branchFilter.test(i, j, k, l, m)) for(int n=0; n<n5; ++n){
+                                if(branchFilter.test(i, j, k, l, m, n)) for(int o=0; o<n6; ++o){
+                                    if(branchFilter.test(i, j, k, l, m, n, o)) intConsumer.accept(i, j, k, l, m, n, o);
                                 }
                             }
                         }

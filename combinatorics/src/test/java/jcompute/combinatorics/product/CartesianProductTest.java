@@ -28,7 +28,7 @@ class CartesianProductTest {
 
     @Test
     void generic() {
-        var fs = new CartesianProductN(16, 2, 3, 4, 5);
+        var fs = new IndexSpaceN(16, 2, 3, 4, 5);
         assertEquals(16*2*3*4*5, fs.cardinality().intValueExact());
 
         var adder = new LongAdder();
@@ -42,7 +42,7 @@ class CartesianProductTest {
 
     @Test
     void n5() {
-        var fs = new CartesianProduct5(16, 2, 3, 4, 5);
+        var fs = new IndexSpace5(16, 2, 3, 4, 5);
         assertEquals(16*2*3*4*5, fs.cardinality().intValueExact());
 
         var adder = new LongAdder();

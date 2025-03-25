@@ -21,40 +21,60 @@ package jcompute.combinatorics.product;
 import java.math.BigInteger;
 import java.util.Optional;
 import java.util.function.IntFunction;
+import java.util.stream.Gatherer;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import jcompute.core.util.function.MultiIntConsumer;
 import jcompute.core.util.function.MultiIntPredicate;
 import jcompute.core.util.function.PrefixedMultiIntConsumer;
 
-public record CartesianProduct0() implements CartesianProduct {
+public record IndexSpace1(int n0) implements IndexSpace {
 
-    @Override public int indexCount() { return 0; }
-    @Override public BigInteger cardinality() { return BigInteger.ZERO; }
+    @Override public int indexCount() { return 1; }
+    @Override public BigInteger cardinality() { return BigInteger.valueOf(n0); }
 
     @Override
-    public void reportIndexRanges(final MultiIntConsumer intConsumer) {
-        // no-op
+    public IntStream streamIndexRanges() {
+        return IntStream.of(n0);
     }
 
     @Override
     public void forEach(final Visiting visiting, final MultiIntConsumer intConsumer) {
-        // no-op
+        visiting.range(n0).forEach(i->{
+            intConsumer.accept(i);
+        });
+    }
+
+    @Override
+    public void forEach(final Visiting visiting, final MultiIntPredicate branchFilter, final MultiIntConsumer intConsumer) {
+        visiting.range(n0).forEach(i->{
+            if(branchFilter.test(i)) intConsumer.accept(i);
+        });
     }
 
     @Override
     public Stream<int[]> stream(final Visiting visiting) {
-        return Stream.empty();
+        return visiting.range(n0)
+            .mapToObj(Integer::valueOf)
+            .gather(Gatherer.of(new Integrators.Integrator1()));
     }
 
     @Override
     public <T> Stream<T> streamCollectors(final IntFunction<T> collectorFactory, final PrefixedMultiIntConsumer<T> prefixedIntConsumer) {
-        return Stream.empty();
+        return Visiting.PARALLEL.range(n0).mapToObj(i->{
+            T t = collectorFactory.apply(i);
+            prefixedIntConsumer.accept(t, i);
+            return t;
+        });
     }
 
     @Override
     public Optional<int[]> findAny(final MultiIntPredicate intPredicate) {
-        return Optional.empty();
+        return Visiting.PARALLEL.range(n0)
+            .filter(intPredicate::test)
+            .mapToObj(i->new int[] {i})
+            .findAny();
     }
 
 }
