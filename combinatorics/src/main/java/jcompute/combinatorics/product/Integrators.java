@@ -160,4 +160,129 @@ final class Integrators {
         }
     }
 
+    record IntegratorAsc2(int n1)
+    implements Integrator<Void, Integer, int[]> {
+        @Override
+        public boolean integrate(final Void state, final Integer i, final Downstream<? super int[]> downstream) {
+            final MultiIntPredicate mip = downstream::push;
+            for(int j=i+1; j<n1; ++j){
+                if(!mip.test(i, j)) return false;
+            }
+            return true;
+        }
+    }
+
+    record IntegratorAsc3(int n1, int n2)
+    implements Integrator<Void, Integer, int[]> {
+        @Override
+        public boolean integrate(final Void state, final Integer i, final Downstream<? super int[]> downstream) {
+            final MultiIntPredicate mip = downstream::push;
+            for(int j=i+1; j<n1; ++j){
+                for(int k=j+1; k<n2; ++k){
+                    if(!mip.test(i, j, k)) return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    record IntegratorAsc4(int n1, int n2, int n3)
+    implements Integrator<Void, Integer, int[]> {
+        @Override
+        public boolean integrate(final Void state, final Integer i, final Downstream<? super int[]> downstream) {
+            final MultiIntPredicate mip = downstream::push;
+            for(int j=i+1; j<n1; ++j){
+                for(int k=j+1; k<n2; ++k){
+                    for(int l=k+1; l<n3; ++l){
+                        if(!mip.test(i, j, k, l)) return false;
+                    }
+                }
+            }
+            return true;
+        }
+    }
+
+    record IntegratorAsc5(int n1, int n2, int n3, int n4)
+    implements Integrator<Void, Integer, int[]> {
+        @Override
+        public boolean integrate(final Void state, final Integer i, final Downstream<? super int[]> downstream) {
+            final MultiIntPredicate mip = downstream::push;
+            for(int j=i+1; j<n1; ++j){
+                for(int k=j+1; k<n2; ++k){
+                    for(int l=k+1; l<n3; ++l){
+                        for(int m=l+1; m<n4; ++m){
+                            if(!mip.test(i, j, k, l, m)) return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+    }
+
+    record IntegratorAsc6(int n1, int n2, int n3, int n4, int n5)
+    implements Integrator<Void, Integer, int[]> {
+        @Override
+        public boolean integrate(final Void state, final Integer i, final Downstream<? super int[]> downstream) {
+            final MultiIntPredicate mip = downstream::push;
+            for(int j=i+1; j<n1; ++j){
+                for(int k=j+1; k<n2; ++k){
+                    for(int l=k+1; l<n3; ++l){
+                        for(int m=l+1; m<n4; ++m){
+                            for(int n=m+1; n<n5; ++n){
+                                if(!mip.test(i, j, k, l, m, n)) return false;
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+    }
+
+    record IntegratorAsc7(int n1, int n2, int n3, int n4, int n5, int n6)
+    implements Integrator<Void, Integer, int[]> {
+        @Override
+        public boolean integrate(final Void state, final Integer i, final Downstream<? super int[]> downstream) {
+            final MultiIntPredicate mip = downstream::push;
+            for(int j=i+1; j<n1; ++j){
+                for(int k=j+1; k<n2; ++k){
+                    for(int l=k+1; l<n3; ++l){
+                        for(int m=l+1; m<n4; ++m){
+                            for(int n=m+1; n<n5; ++n){
+                                for(int o=n+1; o<n6; ++o){
+                                    if(!mip.test(i, j, k, l, m, n, o)) return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+    }
+
+    record IntegratorAsc8(int n1, int n2, int n3, int n4, int n5, int n6, int n7)
+    implements Integrator<Void, Integer, int[]> {
+        @Override
+        public boolean integrate(final Void state, final Integer i, final Downstream<? super int[]> downstream) {
+            final MultiIntPredicate mip = downstream::push;
+            for(int j=i+1; j<n1; ++j){
+                for(int k=j+1; k<n2; ++k){
+                    for(int l=k+1; l<n3; ++l){
+                        for(int m=l+1; m<n4; ++m){
+                            for(int n=m+1; n<n5; ++n){
+                                for(int o=n+1; o<n6; ++o){
+                                    for(int p=o+1; p<n7; ++p){
+                                        if(!mip.test(i, j, k, l, m, n, o, p)) return false;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+    }
 }

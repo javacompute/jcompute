@@ -30,7 +30,7 @@ import jcompute.core.util.function.MultiIntConsumer;
 import jcompute.core.util.function.MultiIntPredicate;
 import jcompute.core.util.function.PrefixedMultiIntConsumer;
 
-public record IndexSpace8(int n0, int n1, int n2, int n3, int n4, int n5, int n6, int n7) implements IndexSpace {
+record IndexSpace8(int n0, int n1, int n2, int n3, int n4, int n5, int n6, int n7) implements IndexSpace {
 
     @Override public int indexCount() { return 8; }
     @Override public BigInteger cardinality() {
@@ -51,56 +51,97 @@ public record IndexSpace8(int n0, int n1, int n2, int n3, int n4, int n5, int n6
 
     @Override
     public void forEach(final Visiting visiting, final MultiIntConsumer intConsumer) {
-        visiting.range(n0).forEach(i->{
-            for(int j=0; j<n1; ++j){
-                for(int k=0; k<n2; ++k){
-                    for(int l=0; l<n3; ++l){
-                        for(int m=0; m<n4; ++m){
-                            for(int n=0; n<n5; ++n){
-                                for(int o=0; o<n6; ++o){
-                                    for(int p=0; p<n7; ++p){
-                                        intConsumer.accept(i, j, k, l, m, n, o, p);
+        switch (visiting.indexOrder()) {
+            case ANY -> visiting.range(n0).forEach(i->{
+                for(int j=0; j<n1; ++j){
+                    for(int k=0; k<n2; ++k){
+                        for(int l=0; l<n3; ++l){
+                            for(int m=0; m<n4; ++m){
+                                for(int n=0; n<n5; ++n){
+                                    for(int o=0; o<n6; ++o){
+                                        for(int p=0; p<n7; ++p){
+                                            intConsumer.accept(i, j, k, l, m, n, o, p);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
-        });
+            });
+            case ASCENDING -> visiting.range(n0).forEach(i->{
+                for(int j=0; j<n1; ++j){
+                    for(int k=j+1; k<n2; ++k){
+                        for(int l=k+1; l<n3; ++l){
+                            for(int m=l+1; m<n4; ++m){
+                                for(int n=m+1; n<n5; ++n){
+                                    for(int o=n+1; o<n6; ++o){
+                                        for(int p=o+1; p<n7; ++p){
+                                            intConsumer.accept(i, j, k, l, m, n, o, p);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
     }
 
     @Override
     public void forEach(final Visiting visiting, final MultiIntPredicate branchFilter, final MultiIntConsumer intConsumer) {
-        visiting.range(n0).forEach(i->{
-            if(branchFilter.test(i)) for(int j=0; j<n1; ++j){
-                if(branchFilter.test(i, j)) for(int k=0; k<n2; ++k){
-                    if(branchFilter.test(i, j, k)) for(int l=0; l<n3; ++l){
-                        if(branchFilter.test(i, j, k, l)) for(int m=0; m<n4; ++m){
-                            if(branchFilter.test(i, j, k, l, m)) for(int n=0; n<n5; ++n){
-                                if(branchFilter.test(i, j, k, l, m, n)) for(int o=0; o<n6; ++o){
-                                    if(branchFilter.test(i, j, k, l, m, n, o)) for(int p=0; p<n7; ++p){
-                                        if(branchFilter.test(i, j, k, l, m, n, o, p)) intConsumer.accept(i, j, k, l, m, n, o, p);
+        switch (visiting.indexOrder()) {
+            case ANY -> visiting.range(n0).forEach(i->{
+                if(branchFilter.test(i)) for(int j=0; j<n1; ++j){
+                    if(branchFilter.test(i, j)) for(int k=0; k<n2; ++k){
+                        if(branchFilter.test(i, j, k)) for(int l=0; l<n3; ++l){
+                            if(branchFilter.test(i, j, k, l)) for(int m=0; m<n4; ++m){
+                                if(branchFilter.test(i, j, k, l, m)) for(int n=0; n<n5; ++n){
+                                    if(branchFilter.test(i, j, k, l, m, n)) for(int o=0; o<n6; ++o){
+                                        if(branchFilter.test(i, j, k, l, m, n, o)) for(int p=0; p<n7; ++p){
+                                            if(branchFilter.test(i, j, k, l, m, n, o, p)) intConsumer.accept(i, j, k, l, m, n, o, p);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
-        });
+            });
+            case ASCENDING -> visiting.range(n0).forEach(i->{
+                if(branchFilter.test(i)) for(int j=0; j<n1; ++j){
+                    if(branchFilter.test(i, j)) for(int k=j+1; k<n2; ++k){
+                        if(branchFilter.test(i, j, k)) for(int l=k+1; l<n3; ++l){
+                            if(branchFilter.test(i, j, k, l)) for(int m=l+1; m<n4; ++m){
+                                if(branchFilter.test(i, j, k, l, m)) for(int n=m+1; n<n5; ++n){
+                                    if(branchFilter.test(i, j, k, l, m, n)) for(int o=n+1; o<n6; ++o){
+                                        if(branchFilter.test(i, j, k, l, m, n, o)) for(int p=o+1; p<n7; ++p){
+                                            if(branchFilter.test(i, j, k, l, m, n, o, p)) intConsumer.accept(i, j, k, l, m, n, o, p);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
     }
 
     @Override
     public Stream<int[]> stream(final Visiting visiting) {
         return visiting.range(n0)
             .mapToObj(Integer::valueOf)
-            .gather(Gatherer.of(new Integrators.Integrator8(n1, n2, n3, n4, n5, n6, n7)));
+            .gather(Gatherer.of(switch (visiting.indexOrder()) {
+                case ANY -> new Integrators.Integrator8(n1, n2, n3, n4, n5, n6, n7);
+                case ASCENDING -> new Integrators.IntegratorAsc8(n1, n2, n3, n4, n5, n6, n7);
+            }));
     }
 
     @Override
     public <T> Stream<T> streamCollectors(final IntFunction<T> collectorFactory, final PrefixedMultiIntConsumer<T> prefixedIntConsumer) {
-        return Visiting.PARALLEL.range(n0).mapToObj(i->{
+        return Concurrency.PARALLEL.range(n0).mapToObj(i->{
             T t = collectorFactory.apply(i);
             for(int j=0; j<n1; ++j){
                 for(int k=0; k<n2; ++k){
@@ -123,7 +164,7 @@ public record IndexSpace8(int n0, int n1, int n2, int n3, int n4, int n5, int n6
 
     @Override
     public Optional<int[]> findAny(final MultiIntPredicate intPredicate) {
-        return Visiting.PARALLEL.range(n0)
+        return Concurrency.PARALLEL.range(n0)
             .mapToObj(i->{
                 for(int j=0; j<n1; ++j){
                     for(int k=0; k<n2; ++k){

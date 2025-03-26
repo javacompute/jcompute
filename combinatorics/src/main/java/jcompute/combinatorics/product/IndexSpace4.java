@@ -30,7 +30,7 @@ import jcompute.core.util.function.MultiIntConsumer;
 import jcompute.core.util.function.MultiIntPredicate;
 import jcompute.core.util.function.PrefixedMultiIntConsumer;
 
-public record IndexSpace4(int n0, int n1, int n2, int n3) implements IndexSpace {
+record IndexSpace4(int n0, int n1, int n2, int n3) implements IndexSpace {
 
     @Override public int indexCount() { return 4; }
     @Override public BigInteger cardinality() {
@@ -75,12 +75,15 @@ public record IndexSpace4(int n0, int n1, int n2, int n3) implements IndexSpace 
     public Stream<int[]> stream(final Visiting visiting) {
         return visiting.range(n0)
             .mapToObj(Integer::valueOf)
-            .gather(Gatherer.of(new Integrators.Integrator4(n1, n2, n3)));
+            .gather(Gatherer.of(switch (visiting.indexOrder()) {
+                case ANY -> new Integrators.Integrator4(n1, n2, n3);
+                case ASCENDING -> new Integrators.IntegratorAsc4(n1, n2, n3);
+            }));
     }
 
     @Override
     public <T> Stream<T> streamCollectors(final IntFunction<T> collectorFactory, final PrefixedMultiIntConsumer<T> prefixedIntConsumer) {
-        return Visiting.PARALLEL.range(n0).mapToObj(i->{
+        return Concurrency.PARALLEL.range(n0).mapToObj(i->{
             T t = collectorFactory.apply(i);
             for(int j=0; j<n1; ++j){
                 for(int k=0; k<n2; ++k){
@@ -95,7 +98,7 @@ public record IndexSpace4(int n0, int n1, int n2, int n3) implements IndexSpace 
 
     @Override
     public Optional<int[]> findAny(final MultiIntPredicate intPredicate) {
-        return Visiting.PARALLEL.range(n0)
+        return Concurrency.PARALLEL.range(n0)
             .mapToObj(i->{
                 for(int j=0; j<n1; ++j){
                     for(int k=0; k<n2; ++k){

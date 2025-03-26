@@ -54,7 +54,12 @@ public record IndexSpaceN(int ...dim) implements IndexSpace {
         visiting.range(dim[0]).forEach(i->{
             var v = new int[dim.length];
             v[0] = i;
-            new RecursiveVisitor(dim, v, intConsumer).recur(1);
+            switch (visiting.indexOrder()) {
+                case ANY ->
+                    new RecursiveVisitor(dim, v, intConsumer).recur(1);
+                case ASCENDING ->
+                    new RecursiveVisitorAsc(dim, v, intConsumer).recur(1);
+            }
         });
     }
 
@@ -63,7 +68,12 @@ public record IndexSpaceN(int ...dim) implements IndexSpace {
         visiting.range(dim[0]).forEach(i->{
             var v = new int[dim.length];
             v[0] = i;
-            new RecursiveVisitorWithBranchFilter(dim, v, branchFilter, intConsumer).recur(1);
+            switch (visiting.indexOrder()) {
+                case ANY ->
+                    new RecursiveVisitorWithBranchFilter(dim, v, branchFilter, intConsumer).recur(1);
+                case ASCENDING ->
+                    new RecursiveVisitorWithBranchFilterAsc(dim, v, branchFilter, intConsumer).recur(1);
+            }
         });
     }
 
@@ -71,12 +81,12 @@ public record IndexSpaceN(int ...dim) implements IndexSpace {
     public Stream<int[]> stream(final Visiting visiting) {
         return visiting.range(dim[0])
             .mapToObj(Integer::valueOf)
-            .gather(Gatherer.of(new IntegratorN(dim)));
+            .gather(Gatherer.of(new IntegratorN(visiting.indexOrder(), dim)));
     }
 
     @Override
     public <T> Stream<T> streamCollectors(final IntFunction<T> collectorFactory, final PrefixedMultiIntConsumer<T> prefixedIntConsumer) {
-        return Visiting.PARALLEL.range(dim[0]).mapToObj(i->{
+        return Concurrency.PARALLEL.range(dim[0]).mapToObj(i->{
             var t = collectorFactory.apply(i);
             var v = new int[dim.length];
             v[0] = i;
@@ -88,7 +98,7 @@ public record IndexSpaceN(int ...dim) implements IndexSpace {
     @Override
     public Optional<int[]> findAny(final MultiIntPredicate intPredicate) {
         final AtomicReference<int[]> result = new AtomicReference<>();
-        return Visiting.PARALLEL.range(dim[0])
+        return Concurrency.PARALLEL.range(dim[0])
             .mapToObj(i->{
                 if(result.get()!=null) return null;
                 var v = new int[dim.length];
@@ -102,7 +112,7 @@ public record IndexSpaceN(int ...dim) implements IndexSpace {
 
     // -- HELPER
 
-    private record IntegratorN(int ...dim)
+    private record IntegratorN(IndexOrder indexOrder, int ...dim)
     implements Integrator<Void, Integer, int[]> {
         @Override
         public boolean integrate(final Void state, final Integer i, final Downstream<? super int[]> downstream) {
@@ -110,7 +120,12 @@ public record IndexSpaceN(int ...dim) implements IndexSpace {
             final AtomicBoolean stop = new AtomicBoolean();
             var v = new int[dim.length];
             v[0] = i;
-            new RecursiveWhile(dim, v, mip::test, stop).recur(1);
+            switch (indexOrder) {
+                case ANY ->
+                    new RecursiveWhile(dim, v, mip::test, stop).recur(1);
+                case ASCENDING ->
+                    new RecursiveWhileAsc(dim, v, mip::test, stop).recur(1);
+            }
             return !stop.get();
         }
     }
@@ -138,6 +153,35 @@ public record IndexSpaceN(int ...dim) implements IndexSpace {
                 return;
             }
             for(int i=0; i<dim[dimIndex]; ++i){
+                v[dimIndex] = i;
+                recur(dimIndex + 1);
+            }
+        }
+    }
+
+    private record RecursiveVisitorAsc(int[] dim, int[] v, MultiIntConsumer intConsumer) {
+        void recur(final int dimIndex){
+            if(dimIndex == v.length-4) {
+                final int lRange = dim[dimIndex];
+                for(int l=dim[dimIndex-1]+1; l<lRange; ++l){
+                    v[dimIndex] = l;
+                    final int kRange = dim[dimIndex+1];
+                    for(int k=l+1; k<kRange; ++k){
+                        v[dimIndex+1] = k;
+                        final int jRange = dim[dimIndex+2];
+                        for(int j=k+1; j<jRange; ++j){
+                            v[dimIndex+2] = j;
+                            final int iRange = dim[dimIndex+3];
+                            for(int i=j+1; i<iRange; ++i){
+                                v[dimIndex+3] = i;
+                                intConsumer.accept(v);
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+            for(int i=dim[dimIndex-1]+1; i<dim[dimIndex]; ++i){
                 v[dimIndex] = i;
                 recur(dimIndex + 1);
             }
@@ -175,6 +219,48 @@ public record IndexSpaceN(int ...dim) implements IndexSpace {
                 return;
             }
             for(int i=0; i<dim[dimIndex]; ++i){
+                v[dimIndex] = i;
+                if(testBranch(v, dimIndex + 1)) {
+                    recur(dimIndex + 1);
+                }
+            }
+        }
+        private boolean testBranch(final int[] v, final int len) {
+            return branchFilter.test(Arrays.copyOf(v, len));
+        }
+    }
+
+    private record RecursiveVisitorWithBranchFilterAsc(
+            int[] dim,
+            int[] v,
+            MultiIntPredicate branchFilter,
+            MultiIntConsumer intConsumer) {
+        void recur(final int dimIndex){
+            if(dimIndex == v.length-4) {
+                final int lRange = dim[dimIndex];
+                for(int l=dim[dimIndex-1]+1; l<lRange; ++l){
+                    v[dimIndex] = l;
+                    if(!testBranch(v, dimIndex + 1)) continue;
+                    final int kRange = dim[dimIndex+1];
+                    for(int k=l+1; k<kRange; ++k){
+                        v[dimIndex+1] = k;
+                        if(!testBranch(v, dimIndex + 2)) continue;
+                        final int jRange = dim[dimIndex+2];
+                        for(int j=k+1; j<jRange; ++j){
+                            v[dimIndex+2] = j;
+                            if(!testBranch(v, dimIndex + 3)) continue;
+                            final int iRange = dim[dimIndex+3];
+                            for(int i=j+1; i<iRange; ++i){
+                                v[dimIndex+3] = i;
+                                if(!testBranch(v, dimIndex + 4)) continue;
+                                intConsumer.accept(v);
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+            for(int i=dim[dimIndex-1]+1; i<dim[dimIndex]; ++i){
                 v[dimIndex] = i;
                 if(testBranch(v, dimIndex + 1)) {
                     recur(dimIndex + 1);
@@ -241,6 +327,39 @@ public record IndexSpaceN(int ...dim) implements IndexSpace {
                 return;
             }
             for(int i=0; i<dim[dimIndex]; ++i){
+                v[dimIndex] = i;
+                recur(dimIndex + 1);
+                if(stop.get()) return;
+            }
+        }
+    }
+
+    private record RecursiveWhileAsc(int[] dim, int[] v, MultiIntPredicate condition, AtomicBoolean stop) {
+        void recur(final int dimIndex){
+            if(dimIndex == v.length-4) {
+                final int lRange = dim[dimIndex];
+                for(int l=v[dimIndex-1]+1; l<lRange; ++l){
+                    v[dimIndex] = l;
+                    final int kRange = dim[dimIndex+1];
+                    for(int k=l+1; k<kRange; ++k){
+                        v[dimIndex+1] = k;
+                        final int jRange = dim[dimIndex+2];
+                        for(int j=k+1; j<jRange; ++j){
+                            v[dimIndex+2] = j;
+                            final int iRange = dim[dimIndex+3];
+                            for(int i=j+1; i<iRange; ++i){
+                                v[dimIndex+3] = i;
+                                if(!condition.test(v)) {
+                                    stop.set(true);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+            for(int i=v[dimIndex-1]+1; i<dim[dimIndex]; ++i){
                 v[dimIndex] = i;
                 recur(dimIndex + 1);
                 if(stop.get()) return;

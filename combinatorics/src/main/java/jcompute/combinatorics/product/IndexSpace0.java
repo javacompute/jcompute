@@ -28,7 +28,7 @@ import jcompute.core.util.function.MultiIntConsumer;
 import jcompute.core.util.function.MultiIntPredicate;
 import jcompute.core.util.function.PrefixedMultiIntConsumer;
 
-public record IndexSpace0() implements IndexSpace {
+record IndexSpace0() implements IndexSpace {
 
     @Override public int indexCount() { return 0; }
     @Override public BigInteger cardinality() { return BigInteger.ZERO; }

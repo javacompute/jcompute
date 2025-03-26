@@ -43,7 +43,14 @@ import jcompute.core.util.function.PrefixedMultiIntConsumer;
 ///- no branch filtering
 public interface IndexSpace {
 
-    enum Visiting {
+    enum IndexOrder {
+        /// Unconstraint, meaning all tuples are considered.
+        ANY,
+        /// Only tuples are considered, where index<sub>0</sub> < index<sub>1</sub> < ...
+        ASCENDING;
+    }
+
+    enum Concurrency {
         SEQUENTIAL{
             @Override
             IntStream range(final int upperExclusive) {
@@ -57,6 +64,18 @@ public interface IndexSpace {
             }
         };
         abstract IntStream range(int upperExclusive);
+    }
+
+    public record Visiting(IndexOrder indexOrder, Concurrency concurrency) {
+        public static Visiting sequential() {
+            return new Visiting(IndexOrder.ANY, Concurrency.SEQUENTIAL);
+        }
+        public static Visiting parallel() {
+            return new Visiting(IndexOrder.ANY, Concurrency.PARALLEL);
+        }
+        public IntStream range(final int upperExclusive) {
+            return concurrency.range(upperExclusive);
+        }
     }
 
     /**
@@ -73,16 +92,16 @@ public interface IndexSpace {
     IntStream streamIndexRanges();
 
     /**
-     * Visits all distinct tuples.
+     * Visits all distinct tuples honoring given {@link IndexOrder}.
      */
     void forEach(Visiting visiting, MultiIntConsumer intConsumer);
     /**
-     * Visits all distinct tuples, that pass given branchFilter.
+     * Visits all distinct tuples, that pass given branchFilter also honoring given {@link IndexOrder}.
      */
     void forEach(Visiting visiting, MultiIntPredicate branchFilter, MultiIntConsumer intConsumer);
 
     /**
-     * Streams all distinct tuples.
+     * Streams all distinct tuples, honoring given {@link IndexOrder}.
      */
     Stream<int[]> stream(Visiting visiting);
 
@@ -99,22 +118,22 @@ public interface IndexSpace {
     // -- SHORTCUTS
 
     default void forEachSequential(final MultiIntConsumer intConsumer) {
-        forEach(Visiting.SEQUENTIAL, intConsumer);
+        forEach(Visiting.sequential(), intConsumer);
     }
     default void forEachParallel(final MultiIntConsumer intConsumer) {
-        forEach(Visiting.PARALLEL, intConsumer);
+        forEach(Visiting.parallel(), intConsumer);
     }
     default void forEachSequential(final MultiIntPredicate branchFilter, final MultiIntConsumer intConsumer) {
-        forEach(Visiting.SEQUENTIAL, branchFilter, intConsumer);
+        forEach(Visiting.sequential(), branchFilter, intConsumer);
     }
     default void forEachParallel(final MultiIntPredicate branchFilter, final MultiIntConsumer intConsumer) {
-        forEach(Visiting.PARALLEL, branchFilter, intConsumer);
+        forEach(Visiting.parallel(), branchFilter, intConsumer);
     }
     default Stream<int[]> streamSequential() {
-        return stream(Visiting.SEQUENTIAL);
+        return stream(Visiting.sequential());
     }
     default Stream<int[]> streamParallel() {
-        return stream(Visiting.PARALLEL);
+        return stream(Visiting.parallel());
     }
 
     // -- FACTORY

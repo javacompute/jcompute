@@ -47,7 +47,7 @@ record IndexSpaceComposite(IndexSpace a, IndexSpace b) implements IndexSpace {
         a.forEach(visiting, va->{
             var v = new int[indexCount()];
             System.arraycopy(va, 0, v, 0, va.length);
-            b.forEach(Visiting.SEQUENTIAL, vb->{
+            b.forEach(Visiting.sequential(), vb->{
                 System.arraycopy(vb, 0, v, va.length, vb.length); // this hurts performance
                 intConsumer.accept(v);
             });

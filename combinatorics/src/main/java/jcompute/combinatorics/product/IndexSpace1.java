@@ -29,7 +29,7 @@ import jcompute.core.util.function.MultiIntConsumer;
 import jcompute.core.util.function.MultiIntPredicate;
 import jcompute.core.util.function.PrefixedMultiIntConsumer;
 
-public record IndexSpace1(int n0) implements IndexSpace {
+record IndexSpace1(int n0) implements IndexSpace {
 
     @Override public int indexCount() { return 1; }
     @Override public BigInteger cardinality() { return BigInteger.valueOf(n0); }
@@ -62,7 +62,7 @@ public record IndexSpace1(int n0) implements IndexSpace {
 
     @Override
     public <T> Stream<T> streamCollectors(final IntFunction<T> collectorFactory, final PrefixedMultiIntConsumer<T> prefixedIntConsumer) {
-        return Visiting.PARALLEL.range(n0).mapToObj(i->{
+        return Concurrency.PARALLEL.range(n0).mapToObj(i->{
             T t = collectorFactory.apply(i);
             prefixedIntConsumer.accept(t, i);
             return t;
@@ -71,7 +71,7 @@ public record IndexSpace1(int n0) implements IndexSpace {
 
     @Override
     public Optional<int[]> findAny(final MultiIntPredicate intPredicate) {
-        return Visiting.PARALLEL.range(n0)
+        return Concurrency.PARALLEL.range(n0)
             .filter(intPredicate::test)
             .mapToObj(i->new int[] {i})
             .findAny();
