@@ -23,8 +23,11 @@ import java.lang.foreign.ValueLayout;
 import java.util.Objects;
 
 import jcompute.core.shape.Shape;
+import jdk.incubator.vector.VectorShape;
 
 public interface JComputeArray {
+
+    final static int VECTOR_BIT_SIZE = VectorShape.preferredShape().vectorBitSize();
 
     Shape shape();
     ValueLayout valueLayout();

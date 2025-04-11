@@ -41,7 +41,7 @@
         <maven.compiler.release>24</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- testing -->
-        <surefire-plugin.argLine>-Xmx384m</surefire-plugin.argLine>
+        <surefire-plugin.argLine>-Xmx384m --enable-preview --add-modules jdk.incubator.vector</surefire-plugin.argLine>
         <junit.version>5.12.1</junit.version>
     </properties>
 

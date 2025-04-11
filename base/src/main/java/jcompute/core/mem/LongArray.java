@@ -112,30 +112,4 @@ public record LongArray(
         return JComputeArray.equals(this, obj);
     }
 
-    //legacy
-
-//    T get(final long gid, long[] dst, int offset, int length);
-//    T put(final long gid, long[] dst, int offset, int length);
-//
-//    default void transferTo(final LongMemory<?> other) {
-//        if(this.shape().totalSize()!=other.shape().totalSize()) {
-//            throw new IllegalArgumentException("shape total size mismatch");
-//        }
-//        final long size = this.shape().totalSize();
-//        var externalizer = new LongUtils.LongExternalizer((int)Math.min(size, 128));
-//        var gid = new long[] {0};
-//        externalizer.transfer(size,
-//                (final long[] values, final int offset, final int length)->{
-//                    this.get(gid[0], values, offset, length);
-//                },
-//                (final long[] values, final int offset, final int length)->{
-//                    other.put(gid[0], values, offset, length);
-//                    gid[0]+=length;
-//                });
-//    }
-//  public static final LongMemory<?> EMPTY = new LongMemoryBuffered(Shape.of(0), LongBuffer.wrap(new long[0]));
-//  public static LongMemory<?> empty() {
-//      return EMPTY;
-//  }
-
 }

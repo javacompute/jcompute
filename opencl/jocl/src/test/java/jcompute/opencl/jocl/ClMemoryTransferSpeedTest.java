@@ -27,8 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jcompute.core.mem.LongArray;
 import jcompute.core.shape.Shape;
-import jcompute.core.timing.Timing;
-import jcompute.core.timing.Timing.StopWatch;
+import jcompute.core.util.timing.Timing;
+import jcompute.core.util.timing.Timing.StopWatch;
 import jcompute.opencl.ClDevice;
 
 class ClMemoryTransferSpeedTest {

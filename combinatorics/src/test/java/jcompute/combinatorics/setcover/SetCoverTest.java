@@ -31,7 +31,7 @@ import lombok.SneakyThrows;
 import jcompute.core.io.Compressor;
 import jcompute.core.mem.ByteArray;
 import jcompute.core.mem.LongArray;
-import jcompute.core.timing.Timing;
+import jcompute.core.util.timing.Timing;
 import jcompute.opencl.ClDevice;
 
 class SetCoverTest {

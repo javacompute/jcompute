@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jcompute.core.mem.LongArray;
 import jcompute.core.shape.Shape;
-import jcompute.core.timing.Timing;
+import jcompute.core.util.timing.Timing;
 import jcompute.opencl.bytedeco.util.PointerUtils;
 
 class MemoryTransferSpeedTest {
