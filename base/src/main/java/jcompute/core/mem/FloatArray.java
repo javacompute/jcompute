@@ -25,6 +25,7 @@ import java.lang.foreign.ValueLayout;
 import java.nio.FloatBuffer;
 
 import jcompute.core.shape.Shape;
+import jcompute.core.util.function.FloatUnaryOperator;
 import jdk.incubator.vector.FloatVector;
 import jdk.incubator.vector.VectorOperators;
 import jdk.incubator.vector.VectorShape;
@@ -72,6 +73,35 @@ public record FloatArray(
      */
     public FloatArray put(final long gid, final float value) {
         memorySegment.setAtIndex(ValueLayout.JAVA_FLOAT, gid, value);
+        return this;
+    }
+
+    public FloatArray clearInPlace(final long startGid, final long endGid) {
+        var slice = memorySegment.asSlice(startGid * 4, (endGid - startGid) * 4);
+        slice.fill((byte) 0);
+        return this;
+    }
+
+    //TODO needs performance testing to see if using FloatBuffer is any faster
+    public FloatArray fillInPlace(final long startGid, final long endGid, final float value) {
+        if(value==0.f) {
+            clearInPlace(startGid, endGid);
+            return this;
+        }
+        var slice = memorySegment.asSlice(startGid * 4, (endGid - startGid) * 4);
+        var buf = slice.asByteBuffer().asFloatBuffer();
+        buf.rewind();
+        for (long gid = startGid; gid < endGid; ++gid) {
+            buf.put(value);
+        }
+        return this;
+    }
+
+    //TODO needs performance testing to see if using FloatBuffer is any faster
+    public FloatArray mapInPlace(final long startGid, final long endGid, final FloatUnaryOperator mapper) {
+        for (long gid = startGid; gid < endGid; ++gid) {
+            memorySegment.setAtIndex(ValueLayout.JAVA_FLOAT, gid, mapper.applyAsFloat(get(gid)));
+        }
         return this;
     }
 
