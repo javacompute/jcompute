@@ -42,7 +42,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- testing -->
         <surefire-plugin.argLine>-Xmx384m --enable-preview --add-modules jdk.incubator.vector</surefire-plugin.argLine>
-        <junit.version>5.12.1</junit.version>
+        <junit.version>5.12.2</junit.version>
     </properties>
 
     <build>
