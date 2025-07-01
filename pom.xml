@@ -30,7 +30,7 @@ additional
         <maven.compiler.release>24</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <bytedeco.version>1.5.11</bytedeco.version>
+        <bytedeco.version>3.0-1.5.12</bytedeco.version>
         <commons-compress.version>1.27.1</commons-compress.version>
         
         <jocl.version>2.0.5</jocl.version>
