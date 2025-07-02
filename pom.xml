@@ -34,7 +34,7 @@ additional
         <commons-compress.version>1.27.1</commons-compress.version>
         
         <jocl.version>2.0.5</jocl.version>
-        <log4j.version>2.24.3</log4j.version>
+        <log4j.version>2.25.0</log4j.version>
 
         <lombok.version>1.18.38</lombok.version>
         <tukaani-xz.version>1.10</tukaani-xz.version>
