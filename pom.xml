@@ -18,7 +18,7 @@ additional
 
     <groupId>io.github.javacompute</groupId>
     <artifactId>jcompute-bom</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>${revision}</version>
 
     <name>JCompute - BOM</name>
     <description>JCompute - Bill of Material (BOM)</description>
@@ -27,10 +27,12 @@ additional
     <packaging>pom</packaging>
 
     <properties>
+        <revision>1.0.0-SNAPSHOT</revision>    
         <maven.compiler.release>24</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <bytedeco.version>3.0-1.5.12</bytedeco.version>
+        <bytedeco.version>1.5.12</bytedeco.version>
+        <bytedeco-opencl.version>3.0-1.5.12</bytedeco-opencl.version>
         <commons-compress.version>1.27.1</commons-compress.version>
         
         <jocl.version>2.0.5</jocl.version>
@@ -40,7 +42,7 @@ additional
         <tukaani-xz.version>1.10</tukaani-xz.version>
 
         <!-- testing -->
-        <junit.version>5.12.1</junit.version>
+        <junit.version>5.13.3</junit.version>
     </properties>
 
     <dependencyManagement>
@@ -51,43 +53,43 @@ additional
             <dependency>
                 <groupId>io.github.javacompute</groupId>
                 <artifactId>jcompute-parent</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>io.github.javacompute</groupId>
                 <artifactId>jcompute-ai</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>io.github.javacompute</groupId>
                 <artifactId>jcompute-base</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>io.github.javacompute</groupId>
                 <artifactId>jcompute-opencl-applib</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>io.github.javacompute</groupId>
                 <artifactId>jcompute-opencl-bytedeco</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>io.github.javacompute</groupId>
                 <artifactId>jcompute-opencl-jocl</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>io.github.javacompute</groupId>
                 <artifactId>jcompute-combinatorics</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
 
             <!-- BYTEDECO-->
@@ -107,7 +109,7 @@ additional
             <dependency>
                 <groupId>org.bytedeco</groupId>
                 <artifactId>opencl-platform</artifactId>
-                <version>3.0-${bytedeco.version}</version>
+                <version>${bytedeco-opencl.version}</version>
             </dependency>
 
             <!-- JOCL -->

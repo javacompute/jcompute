@@ -25,7 +25,7 @@
     <parent>
         <groupId>io.github.javacompute</groupId>
         <artifactId>jcompute-bom</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>jcompute-parent</artifactId>
@@ -42,7 +42,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- testing -->
         <surefire-plugin.argLine>-Xmx384m --enable-preview --add-modules jdk.incubator.vector</surefire-plugin.argLine>
-        <junit.version>5.13.2</junit.version>
     </properties>
 
     <build>
