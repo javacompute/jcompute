@@ -42,7 +42,7 @@ additional
         <tukaani-xz.version>1.10</tukaani-xz.version>
 
         <!-- testing -->
-        <junit.version>5.13.3</junit.version>
+        <junit.version>5.13.4</junit.version>
     </properties>
 
     <dependencyManagement>
