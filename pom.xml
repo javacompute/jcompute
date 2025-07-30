@@ -33,7 +33,7 @@ additional
 
         <bytedeco.version>1.5.12</bytedeco.version>
         <bytedeco-opencl.version>3.0-1.5.12</bytedeco-opencl.version>
-        <commons-compress.version>1.27.1</commons-compress.version>
+        <commons-compress.version>1.28.0</commons-compress.version>
         
         <jocl.version>2.0.5</jocl.version>
         <log4j.version>2.25.1</log4j.version>
