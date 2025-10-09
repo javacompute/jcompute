@@ -79,7 +79,6 @@ public class PartitionUtils {
 
     // -- HELPER
 
-
     /// asserts n<=size
     private void checkArguments(final long length, final int n) {
         if(length<0) throw new IllegalArgumentException("length (%d) must be non-negative".formatted(length));
