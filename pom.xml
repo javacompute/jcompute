@@ -39,7 +39,7 @@ additional
         <log4j.version>2.25.2</log4j.version>
 
         <lombok.version>1.18.42</lombok.version>
-        <tukaani-xz.version>1.10</tukaani-xz.version>
+        <tukaani-xz.version>1.11</tukaani-xz.version>
 
         <!-- testing -->
         <junit.version>6.0.1</junit.version>
