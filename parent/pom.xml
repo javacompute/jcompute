@@ -38,7 +38,6 @@
     <packaging>pom</packaging>
 
     <properties>
-        <maven.compiler.release>24</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- testing -->
         <surefire-plugin.argLine>-Xmx384m --enable-preview --add-modules jdk.incubator.vector</surefire-plugin.argLine>
