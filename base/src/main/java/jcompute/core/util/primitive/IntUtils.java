@@ -18,6 +18,13 @@
  */
 package jcompute.core.util.primitive;
 
+import java.util.function.IntBinaryOperator;
+import java.util.function.IntPredicate;
+import java.util.stream.Gatherer;
+import java.util.stream.Gatherer.Downstream;
+import java.util.stream.Gatherer.Integrator;
+import java.util.stream.IntStream;
+
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -42,6 +49,86 @@ public class IntUtils {
     public int pack(final short mostSignificant, final short leastSignificant) {
         return ((mostSignificant & 0xffff)<<16)
                 | (leastSignificant & 0xffff);
+    }
+
+    public boolean isEmpty(final int[] array) {
+        return array==null
+                || array.length == 0;
+    }
+
+    public int size(final int[] array) {
+        return array==null
+                ? 0
+                : array.length;
+    }
+
+    public int[] nullToEmpty(final int[] array) {
+        return array!=null
+                ? array
+                : new int[0];
+    }
+
+    public boolean allEqual(final int[] array) {
+        if(size(array)<2) return true;
+        int firstElement = array[0];
+        for (int number : array) {
+            if (number != firstElement)
+                return false; // found a different number
+        }
+        return true; // all numbers are the same
+    }
+
+    public boolean allEqual(final IntStream stream) {
+        return stream
+                .allMatch(new AllEqualIntPredicate());
+    }
+
+    public IntStream mapAdjacent(final IntStream stream, final IntBinaryOperator mapper) {
+        if(stream.isParallel())
+            throw new IllegalArgumentException("adjacency is only well defined for a sequential stream");
+
+        return stream
+                .boxed()
+                .gather(mapAdjacent(mapper))
+                .mapToInt(Integer::intValue);
+    }
+
+    // -- HELPER
+
+    private static Gatherer<Integer, ?, Integer> mapAdjacent(final IntBinaryOperator mapper) {
+        class SlidingWindow {
+            int latest;
+            boolean first = true;
+
+            boolean integrate(final Integer element, final Downstream<? super Integer> downstream) {
+                if(first) {
+                    this.latest = element;
+                    this.first = false;
+                    return true;
+                }
+                var res = downstream.push(mapper.applyAsInt(latest, element));
+                this.latest = element;
+                return res;
+            }
+        }
+        return Gatherer.<Integer, SlidingWindow, Integer>ofSequential(
+                SlidingWindow::new, // Initializer
+                Integrator.<SlidingWindow, Integer, Integer>ofGreedy(SlidingWindow::integrate));
+    }
+
+    private static final class AllEqualIntPredicate
+    implements IntPredicate {
+        boolean initialized = false;
+        int first = 0;
+        @Override
+        public boolean test(final int value) {
+            if(!initialized) {
+                this.first = value;
+                this.initialized = true;
+                return true;
+            }
+            return value == first;
+        }
     }
 
     // JUnit
