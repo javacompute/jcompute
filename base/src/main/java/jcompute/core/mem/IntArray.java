@@ -26,6 +26,8 @@ import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.nio.IntBuffer;
 import java.util.function.LongToIntFunction;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 import jcompute.core.io.IntMarshaller;
 import jcompute.core.shape.Shape;
@@ -50,6 +52,10 @@ public record IntArray(
         return array;
     }
 
+    public static IntArray wrap(final int[] values) {
+        return wrap(Arena.ofAuto(), values);
+    }
+
     @Override
     public ValueLayout valueLayout() {
         return VALUE_LAYOUT;
@@ -59,7 +65,7 @@ public record IntArray(
      * Returns the {@code int} value from the underlying buffer at global index {@code gid}.
      * @param gid the global index into the underlying buffer
      */
-    public long get(final long gid) {
+    public int get(final long gid) {
         return memorySegment.getAtIndex(VALUE_LAYOUT, gid);
     }
 
@@ -77,6 +83,14 @@ public record IntArray(
     public IntArray fill(final LongToIntFunction filler) {
         shape().forEach(gid->put(gid, filler.applyAsInt(gid)));
         return this;
+    }
+
+    /**
+     * Returns an {@link IntStream} that iterates through all the int elements of the underlying {@link MemorySegment}.
+     */
+    public IntStream stream() {
+        return LongStream.range(0, shape.totalSize())
+            .mapToInt(gid->memorySegment.getAtIndex(VALUE_LAYOUT, gid));
     }
 
     // -- IO
