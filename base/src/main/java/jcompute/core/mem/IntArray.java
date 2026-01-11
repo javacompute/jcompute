@@ -24,26 +24,26 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
-import java.nio.LongBuffer;
-import java.util.function.LongUnaryOperator;
+import java.nio.IntBuffer;
+import java.util.function.LongToIntFunction;
 
-import jcompute.core.io.LongMarshaller;
+import jcompute.core.io.IntMarshaller;
 import jcompute.core.shape.Shape;
 
-public record LongArray(
+public record IntArray(
         Shape shape,
         MemorySegment memorySegment) implements JComputeArray {
 
-    private final static ValueLayout.OfLong VALUE_LAYOUT = ValueLayout.JAVA_LONG;
+    private final static ValueLayout.OfInt VALUE_LAYOUT = ValueLayout.JAVA_INT;
 
-    public static LongArray of(final Arena arena, final Shape shape) {
+    public static IntArray of(final Arena arena, final Shape shape) {
         var layout = MemoryLayout.sequenceLayout(shape.totalSize(), VALUE_LAYOUT);
         var memorySegment = arena.allocate(layout);
-        return new LongArray(shape, memorySegment);
+        return new IntArray(shape, memorySegment);
     }
 
-    public static LongArray wrap(final Arena arena, final long[] values) {
-        var array = LongArray.of(arena, Shape.of(values.length));
+    public static IntArray wrap(final Arena arena, final int[] values) {
+        var array = IntArray.of(arena, Shape.of(values.length));
         for (int i = 0; i < values.length; i++) {
             array.memorySegment.setAtIndex(VALUE_LAYOUT, i, values[i]);
         }
@@ -56,7 +56,7 @@ public record LongArray(
     }
 
     /**
-     * Returns the {@code long} value from the underlying buffer at global index {@code gid}.
+     * Returns the {@code int} value from the underlying buffer at global index {@code gid}.
      * @param gid the global index into the underlying buffer
      */
     public long get(final long gid) {
@@ -64,46 +64,46 @@ public record LongArray(
     }
 
     /**
-     * Sets the i-th element of the underlying buffer to given {@code long} value.
+     * Sets the i-th element of the underlying buffer to given {@code int} value.
      * @param gid the global index into the underlying buffer
      * @param value the {@code long} value to copy
      * @return this
      */
-    public LongArray put(final long gid, final long value) {
+    public IntArray put(final long gid, final int value) {
         memorySegment.setAtIndex(VALUE_LAYOUT, gid, value);
         return this;
     }
 
-    public LongArray fill(final LongUnaryOperator filler) {
-        shape().forEach(gid->put(gid, filler.applyAsLong(gid)));
+    public IntArray fill(final LongToIntFunction filler) {
+        shape().forEach(gid->put(gid, filler.applyAsInt(gid)));
         return this;
     }
 
     // -- IO
 
-    public static LongArray read(final Arena arena, final InputStream in) {
+    public static IntArray read(final Arena arena, final InputStream in) {
         var shape = Shape.read(in);
         var array = of(arena, shape);
-        new LongMarshaller().readSegment(shape.totalSize(), in, array.memorySegment());
+        new IntMarshaller().readSegment(shape.totalSize(), in, array.memorySegment());
         return array;
     }
 
-    public LongArray write(final OutputStream out) {
+    public IntArray write(final OutputStream out) {
         shape.write(out);
-        new LongMarshaller().writeSegment(memorySegment, out);
+        new IntMarshaller((int)Math.min(64L, shape.totalSize())).writeSegment(memorySegment, out);
         return this;
     }
 
     @Override
     public int bytesPerElement() {
-        return 8;
+        return 4;
     }
 
-    public LongBuffer toBuffer() {
-        return memorySegment.asByteBuffer().asLongBuffer();
+    public IntBuffer toBuffer() {
+        return memorySegment.asByteBuffer().asIntBuffer();
     }
 
-    public long[] toArray() {
+    public int[] toArray() {
         return toBuffer().array();
     }
 

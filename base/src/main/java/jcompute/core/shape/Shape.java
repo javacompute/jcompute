@@ -26,9 +26,9 @@ import java.util.stream.LongStream;
 
 import lombok.SneakyThrows;
 
+import jcompute.core.io.LongMarshaller;
 import jcompute.core.util.function.BiLongConsumer;
 import jcompute.core.util.function.TriLongConsumer;
-import jcompute.core.util.primitive.LongUtils.LongExternalizer;
 
 /**
  * Tuple of long, where the elements give the lengths of the corresponding array dimensions.
@@ -157,13 +157,13 @@ implements Serializable {
     public void write(final OutputStream out) {
         out.write(dimensionCount);
         if(dimensionCount==0) return;
-        var externalizer = new LongExternalizer(1);
-        externalizer.write(sizeX, out);
+        var marshaller = new LongMarshaller(1);
+        marshaller.write(sizeX, out);
         if(dimensionCount>1) {
-            externalizer.write(sizeY, out);
+            marshaller.write(sizeY, out);
         }
         if(dimensionCount>2) {
-            externalizer.write(sizeZ, out);
+            marshaller.write(sizeZ, out);
         }
     }
 
@@ -171,21 +171,21 @@ implements Serializable {
     public static Shape read(final InputStream in) {
         final int dimensionCount = in.read();
         if(dimensionCount==0) return empty();
-        var externalizer = new LongExternalizer(1);
+        var marshaller = new LongMarshaller(1);
         if(dimensionCount==1) {
             return Shape.of(
-                    externalizer.read(in));
+                    marshaller.read(in));
         }
         if(dimensionCount==2) {
             return Shape.of(
-                    externalizer.read(in),
-                    externalizer.read(in));
+                    marshaller.read(in),
+                    marshaller.read(in));
         }
         if(dimensionCount==3) {
             return Shape.of(
-                    externalizer.read(in),
-                    externalizer.read(in),
-                    externalizer.read(in));
+                    marshaller.read(in),
+                    marshaller.read(in),
+                    marshaller.read(in));
         }
         throw new IllegalArgumentException("Unexpected value: " + dimensionCount);
     }

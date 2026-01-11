@@ -27,11 +27,11 @@ import org.bytedeco.javacpp.ShortPointer;
 
 import lombok.experimental.UtilityClass;
 
+import jcompute.core.io.LongMarshaller;
 import jcompute.core.mem.ByteArray;
 import jcompute.core.mem.DoubleArray;
 import jcompute.core.mem.LongArray;
 import jcompute.core.mem.ShortArray;
-import jcompute.core.util.primitive.LongUtils;
 
 @UtilityClass
 public class PointerUtils {
@@ -90,14 +90,15 @@ public class PointerUtils {
         return array;
     }
 
+    @SuppressWarnings("unused")
     public LongArray copy(final LongPointer pointer, final LongArray array) {
         var size = array.shape().totalSize();
         var to = array.memorySegment();
 
         var gid = new long[] {0L};
-        var externalizer = new LongUtils.LongExternalizer((int)Math.min(1024<<2, size));
-        var block = MemorySegment.ofArray(externalizer.longArray());
-        externalizer.transfer(size,
+        var marshaller = new LongMarshaller((int)Math.min(1024<<2, size));
+        var block = MemorySegment.ofArray(marshaller.longArray());
+        marshaller.transfer(size,
                 (values, offset, length)->{
                     pointer.position(gid[0]);
                     pointer.get(values, offset, length);

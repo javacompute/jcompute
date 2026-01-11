@@ -20,6 +20,7 @@ package jcompute.core.util.primitive;
 
 import java.util.function.IntBinaryOperator;
 import java.util.function.IntPredicate;
+import java.util.function.Supplier;
 import java.util.stream.Gatherer;
 import java.util.stream.Gatherer.Downstream;
 import java.util.stream.Gatherer.Integrator;
@@ -30,26 +31,26 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class IntUtils {
 
-    public void toBytes(final int v, final byte[] bytes) {
-        bytes[0] = (byte)(v >> 24);
-        bytes[1] = (byte)(v >> 16);
-        bytes[2] = (byte)(v >> 8);
-        bytes[3] = (byte)(v);
+    // -- ARITHEMTIC
+
+    /// non-negative remainder of x divided by modulus
+    public int euclidianMod(final int x, final int modulus) {
+        assertGreaterThanZero(modulus, ()->"modulus must be greater than zero");
+        int result = x % modulus;
+        if (result < 0) {
+            result += modulus;
+        }
+        return result;
     }
 
-    public int fromBytes(final byte[] bytes) {
-        int v = 0;
-        v|= (bytes[0] & 0xff) << 24;
-        v|= (bytes[1] & 0xff) << 16;
-        v|= (bytes[2] & 0xff) << 8;
-        v|= (bytes[3] & 0xff) << 0;
-        return v;
-    }
+    // -- PACKING
 
     public int pack(final short mostSignificant, final short leastSignificant) {
         return ((mostSignificant & 0xffff)<<16)
                 | (leastSignificant & 0xffff);
     }
+
+    // -- ARRAY
 
     public boolean isEmpty(final int[] array) {
         return array==null
@@ -78,6 +79,8 @@ public class IntUtils {
         return true; // all numbers are the same
     }
 
+    // -- STREAM
+
     public boolean allEqual(final IntStream stream) {
         return stream
                 .allMatch(new AllEqualIntPredicate());
@@ -91,6 +94,21 @@ public class IntUtils {
                 .boxed()
                 .gather(mapAdjacent(mapper))
                 .mapToInt(Integer::intValue);
+    }
+
+    // -- ASSERT
+
+
+    public int assertNonNegative(final int value, final Supplier<String> msgSupplier) {
+        if(value<0)
+            throw new IllegalArgumentException(msgSupplier.get());
+        return value;
+    }
+
+    public int assertGreaterThanZero(final int value, final Supplier<String> msgSupplier) {
+        if(value<1)
+            throw new IllegalArgumentException(msgSupplier.get());
+        return value;
     }
 
     // -- HELPER
@@ -132,7 +150,7 @@ public class IntUtils {
     }
 
     // JUnit
-    int[] samples() {
+    public int[] samples() {
         return new int[] {
                 Integer.MIN_VALUE,
                 -1_623_456_789,

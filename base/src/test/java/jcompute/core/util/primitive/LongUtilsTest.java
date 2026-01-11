@@ -18,26 +18,37 @@
  */
 package jcompute.core.util.primitive;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import lombok.SneakyThrows;
+
+import jcompute.core.io.LongMarshaller;
+
 class LongUtilsTest {
 
+    @SneakyThrows
     @Test
     void packing() {
-        var byteArray = new byte[Long.BYTES];
-        for(long v : LongUtils.samples()) {
-            LongUtils.toBytes(v, byteArray);
+        var marshaller = new LongMarshaller(1);
 
-            assertEquals(v, LongUtils.fromBytes(byteArray));
-            assertEquals(v, LongUtils.pack(
-                    IntUtils.pack(
-                            ShortUtils.pack(byteArray[0], byteArray[1]),
-                            ShortUtils.pack(byteArray[2], byteArray[3])),
-                    IntUtils.pack(
-                            ShortUtils.pack(byteArray[4], byteArray[5]),
-                            ShortUtils.pack(byteArray[6], byteArray[7]))));
+        for(long v : LongUtils.samples()) {
+
+            try(var bos = new ByteArrayOutputStream(8)) {
+                marshaller.write(v, bos);
+                bos.flush();
+                var byteArray = bos.toByteArray();
+
+                assertEquals(v, LongUtils.pack(
+                        IntUtils.pack(
+                                ShortUtils.pack(byteArray[0], byteArray[1]),
+                                ShortUtils.pack(byteArray[2], byteArray[3])),
+                        IntUtils.pack(
+                                ShortUtils.pack(byteArray[4], byteArray[5]),
+                                ShortUtils.pack(byteArray[6], byteArray[7]))));
+            }
         }
     }
 

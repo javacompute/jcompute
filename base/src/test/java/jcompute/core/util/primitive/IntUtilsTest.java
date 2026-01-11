@@ -21,27 +21,37 @@ package jcompute.core.util.primitive;
 import java.util.function.IntSupplier;
 import java.util.stream.IntStream;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import lombok.SneakyThrows;
 import lombok.experimental.ExtensionMethod;
+
+import jcompute.core.io.IntMarshaller;
 
 @ExtensionMethod(IntUtils.class)
 class IntUtilsTest {
 
+    @SneakyThrows
     @Test
     void packing() {
-        var byteArray = new byte[Integer.BYTES];
-        for(int v : IntUtils.samples()) {
-            IntUtils.toBytes(v, byteArray);
+        var marshaller = new IntMarshaller(1);
 
-            assertEquals(v, IntUtils.fromBytes(byteArray));
-            assertEquals(v, IntUtils.pack(
-                    ShortUtils.pack(byteArray[0], byteArray[1]),
-                    ShortUtils.pack(byteArray[2], byteArray[3])));
+        for(int v : IntUtils.samples()) {
+
+            try(var bos = new ByteArrayOutputStream(4)) {
+                marshaller.write(v, bos);
+                bos.flush();
+                var byteArray = bos.toByteArray();
+
+                assertEquals(v, IntUtils.pack(
+                        ShortUtils.pack(byteArray[0], byteArray[1]),
+                        ShortUtils.pack(byteArray[2], byteArray[3])));
+            }
         }
     }
 
