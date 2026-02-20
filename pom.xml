@@ -45,6 +45,32 @@ additional
         <junit.version>6.0.2</junit.version>
     </properties>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.20.1</version>
+                    <!-- usage: mvn versions:set -Drevision=1.0.0-SNAPSHOT 
+                                to be run before install or deploy -->
+                    <configuration>
+                        <newVersion>${revision}</newVersion>
+                        <processAllModules>true</processAllModules>
+                        <generateBackupPoms>false</generateBackupPoms>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>set</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
     <dependencyManagement>
         <dependencies>
 
@@ -129,7 +155,7 @@ additional
             </dependency>
 
             <!-- LOGGING -->
-            
+
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
