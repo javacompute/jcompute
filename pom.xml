@@ -31,7 +31,7 @@ additional
         <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <bytedeco.version>1.5.12</bytedeco.version>
+        <bytedeco.version>1.5.13</bytedeco.version>
         <bytedeco-opencl.version>3.0-1.5.12</bytedeco-opencl.version>
         <commons-compress.version>1.28.0</commons-compress.version>
 
