@@ -32,7 +32,7 @@ additional
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <bytedeco.version>1.5.13</bytedeco.version>
-        <bytedeco-opencl.version>3.0-1.5.12</bytedeco-opencl.version>
+        <bytedeco-opencl.version>3.0-1.5.13</bytedeco-opencl.version>
         <commons-compress.version>1.28.0</commons-compress.version>
 
         <jocl.version>2.0.6</jocl.version>
