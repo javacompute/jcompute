@@ -130,6 +130,16 @@ public class FXExt {
         return addNode(group, new Box(sx, sy, sz));
     }
 
+    public Box addBoxNonCentered(final Group group, final double sx, final double sy, final double sz) {
+        var box = new Box(sx, sy, sz);
+        var innerGroup = addNode(group, new Group(box));
+        innerGroup.translateXProperty().bind(box.widthProperty().multiply(0.5));
+        innerGroup.translateYProperty().bind(box.heightProperty().multiply(0.5));
+        innerGroup.translateZProperty().bind(box.depthProperty().multiply(0.5));
+        innerGroup.setUserData("non-centered");
+        return box;
+    }
+
     public Cylinder addCylinder(final Group group, final double radius, final double height) {
         return addNode(group, new Cylinder(radius, height));
     }
