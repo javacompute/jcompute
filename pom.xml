@@ -35,6 +35,7 @@ additional
         <bytedeco-opencl.version>3.0-1.5.13</bytedeco-opencl.version>
         <commons-compress.version>1.28.0</commons-compress.version>
 
+        <javafx.version>25.0.2</javafx.version>
         <jocl.version>2.0.6</jocl.version>
         <slf4j-api.version>2.0.17</slf4j-api.version>
 
@@ -154,6 +155,38 @@ additional
                 <version>${commons-compress.version}</version>
             </dependency>
 
+            <!-- JAVAFX -->
+
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-base</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-controls</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-swing</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-fxml</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-web</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+
             <!-- LOGGING -->
 
             <dependency>
@@ -185,6 +218,7 @@ additional
         <module>opencl</module>
         <module>combinatorics</module>
         <module>ai</module>
+        <module>fx</module>
     </modules>
 
     <!-- META DATA -->

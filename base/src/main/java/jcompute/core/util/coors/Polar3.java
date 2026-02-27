@@ -39,8 +39,12 @@ public record Polar3(
 
     public Polar3 {
         if(r<0) throw new IllegalArgumentException("requires r non negative");
-        if(polarAngleRad<0) throw new IllegalArgumentException("requires polarAngle non negative");
-        if(polarAngleRad>Math.PI) throw new IllegalArgumentException("requires polarAngle less than or equal π");
+
+        if(polarAngleRad<0) {
+            polarAngleRad = 0;
+        } else if(polarAngleRad>Math.PI) {
+            polarAngleRad = Math.PI;
+        }
 
         if(azimuthRad < -Math.PI) {
             long n = Math.round(-0.5*azimuthRad/Math.PI);
@@ -67,6 +71,10 @@ public record Polar3(
      */
     public double azimuthDeg() {
         return Math.toDegrees(azimuthRad);
+    }
+
+    public Polar3 orbit(final double polarAngleRad, final double azimuthRad) {
+        return new Polar3(r, polarAngleRad, azimuthRad);
     }
 
     public Cartesian3 toCartesian() {

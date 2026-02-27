@@ -1,5 +1,0 @@
-# as supported by https://nodj.github.io/AutoDeriv/
-!/         # default status: NOT derived
-applib
-bytedeco
-jocl
