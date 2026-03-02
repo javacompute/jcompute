@@ -40,7 +40,7 @@ additional
         <slf4j-api.version>2.0.17</slf4j-api.version>
 
         <lombok.version>1.18.42</lombok.version>
-        <tukaani-xz.version>1.11</tukaani-xz.version>
+        <tukaani-xz.version>1.12</tukaani-xz.version>
 
         <!-- testing -->
         <junit.version>6.0.3</junit.version>
