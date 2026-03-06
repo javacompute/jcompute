@@ -35,6 +35,7 @@ additional
         <bytedeco-opencl.version>3.0-1.5.13</bytedeco-opencl.version>
         <commons-compress.version>1.28.0</commons-compress.version>
 
+        <jackson.version>3.0.4</jackson.version>
         <javafx.version>25.0.2</javafx.version>
         <jocl.version>2.0.6</jocl.version>
         <slf4j-api.version>2.0.17</slf4j-api.version>
@@ -207,6 +208,12 @@ additional
                 <groupId>org.tukaani</groupId>
                 <artifactId>xz</artifactId>
                 <version>${tukaani-xz.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>tools.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
             </dependency>
 
         </dependencies>

@@ -53,6 +53,11 @@
             <optional>true</optional>
         </dependency>
         
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        
         <!-- TESTING -->
 
         <!-- arbitrary choice of binding -->

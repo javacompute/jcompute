@@ -18,6 +18,9 @@
  */
 package jcompute.core.util.primitive;
 
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
+
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -41,6 +44,12 @@ public class LongUtils {
                 4_123_456_789_012_345_678L,
                 Long.MAX_VALUE,
         };
+    }
+
+    public static String toString(final long[] v) {
+        return v==null || v.length == 0
+                ? "{}"
+                : LongStream.of(v).mapToObj(e->""+e).collect(Collectors.joining(", "));
     }
 
 }

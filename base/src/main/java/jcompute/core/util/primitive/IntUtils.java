@@ -21,6 +21,7 @@ package jcompute.core.util.primitive;
 import java.util.function.IntBinaryOperator;
 import java.util.function.IntPredicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Gatherer;
 import java.util.stream.Gatherer.Downstream;
 import java.util.stream.Gatherer.Integrator;
@@ -160,6 +161,12 @@ public class IntUtils {
                 1_623_456_789,
                 Integer.MAX_VALUE,
         };
+    }
+
+    public static String toString(final int[] v) {
+        return v==null || v.length == 0
+                ? "{}"
+                : IntStream.of(v).mapToObj(e->""+e).collect(Collectors.joining(", "));
     }
 
 }
