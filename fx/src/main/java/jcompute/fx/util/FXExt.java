@@ -18,10 +18,15 @@
  */
 package jcompute.fx.util;
 
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
+
 import lombok.experimental.UtilityClass;
 
 import javafx.beans.value.ObservableDoubleValue;
+import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
+import javafx.geometry.VPos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PointLight;
@@ -30,9 +35,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Cylinder;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape3D;
 import javafx.scene.shape.Sphere;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
@@ -140,8 +150,16 @@ public class FXExt {
         return box;
     }
 
+    public Circle addCircle(final Group group, final Point2D placement, final double radius) {
+        return addNode(group, new Circle(placement.getX(), placement.getY(), radius));
+    }
+
     public Cylinder addCylinder(final Group group, final double radius, final double height) {
         return addNode(group, new Cylinder(radius, height));
+    }
+
+    public Line addLine(final Group group, final Point2D lineStart, final Point2D lineEnd) {
+        return addNode(group, new Line(lineStart.getX(), lineStart.getY(), lineEnd.getX(), lineEnd.getY()));
     }
 
     public Sphere addSphere(final Group group, final double radius) {
@@ -150,6 +168,24 @@ public class FXExt {
 
     public PointLight addPointLight(final Group group) {
         return addNode(group, new PointLight());
+    }
+
+    public Polygon addPolygon(final Group group, final Point2D ...p) {
+        var coors = Stream.of(p)
+            .flatMapToDouble(it->DoubleStream.of(it.getX(), it.getY()))
+            .toArray();
+        return addNode(group, new Polygon(coors));
+    }
+
+    public Text addText(final Group group, final Font font, final Point2D placement, final String text) {
+        var node = new Text(placement.getX(), placement.getY(), text);
+        node.setFont(font);
+        node.setStrokeWidth(0.5);
+        // Calculate center position
+        var bounds = node.getLayoutBounds();
+        node.setTranslateX(bounds.getWidth() * -.5);
+        node.setTextOrigin(VPos.CENTER);
+        return addNode(group, node);
     }
 
     // -- SCENE EXT
