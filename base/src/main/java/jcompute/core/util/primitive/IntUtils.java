@@ -31,6 +31,33 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class IntUtils {
+	
+	/**
+	 * always ordered
+	 */
+	public record IntRange(
+			int startInclusive,
+			int endInclusive) {
+		
+		public IntRange {
+			if(startInclusive > endInclusive) {
+				var newEnd = startInclusive;
+				startInclusive = endInclusive;
+				endInclusive = newEnd; 	
+			}
+		}
+		
+		public IntStream stream() {
+			return IntStream.rangeClosed(startInclusive, endInclusive);
+		}
+		
+		public boolean contains(int value) {
+			if(value<startInclusive) return false;
+			if(value>endInclusive) return false;
+			return true;
+		}
+		
+	}
 
     // -- ARITHEMTIC
 

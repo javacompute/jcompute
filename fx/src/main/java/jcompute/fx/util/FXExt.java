@@ -205,5 +205,13 @@ public class FXExt {
     public Translate asTranslate(final Point3D point) {
         return new Translate(point.getX(), point.getY(), point.getZ());
     }
+    
+    public Point2D asRotated90DegreeCounterClockwise(final Point2D p) {
+        return new Point2D(-p.getY(), p.getX());
+    }
+    
+    public Point2D asRotated90DegreeClockwise(final Point2D p) {
+        return new Point2D(p.getY(), -p.getX());
+    }
 
 }

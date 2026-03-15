@@ -25,6 +25,29 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class FloatUtils {
+	
+	/**
+	 * always ordered
+	 */
+	public record FloatRange(
+			float startInclusive,
+			float endInclusive) {
+		
+		public FloatRange {
+			if(startInclusive > endInclusive) {
+				var newEnd = startInclusive;
+				startInclusive = endInclusive;
+				endInclusive = newEnd; 	
+			}
+		}
+		
+		public boolean contains(float value) {
+			if(value<startInclusive) return false;
+			if(value>endInclusive) return false;
+			return true;
+		}
+		
+	}
 
     public String format(final String elementFormat, final float[] array) {
         var sb = new StringBuilder();
