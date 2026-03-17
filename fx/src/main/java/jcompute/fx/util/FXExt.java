@@ -38,6 +38,8 @@ import javafx.scene.shape.Box;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Mesh;
+import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape3D;
 import javafx.scene.shape.Sphere;
@@ -177,6 +179,10 @@ public class FXExt {
         return addNode(group, new Polygon(coors));
     }
 
+    public MeshView addMeshView(final Group group, final Mesh mesh) {
+        return addNode(group, new MeshView(mesh));
+    }
+
     public Text addText(final Group group, final Font font, final Point2D placement, final String text) {
         var node = new Text(placement.getX(), placement.getY(), text);
         node.setFont(font);
@@ -202,14 +208,22 @@ public class FXExt {
 
     // -- POINT EXT
 
+    public Point3D asPoint3D(final Point2D point, final double z) {
+        return new Point3D(point.getX(), point.getY(), z);
+    }
+
+    public Point2D asPoint2D(final Point3D point) {
+        return new Point2D(point.getX(), point.getY());
+    }
+
     public Translate asTranslate(final Point3D point) {
         return new Translate(point.getX(), point.getY(), point.getZ());
     }
-    
+
     public Point2D asRotated90DegreeCounterClockwise(final Point2D p) {
         return new Point2D(-p.getY(), p.getX());
     }
-    
+
     public Point2D asRotated90DegreeClockwise(final Point2D p) {
         return new Point2D(p.getY(), -p.getX());
     }

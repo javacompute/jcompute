@@ -25,28 +25,28 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class FloatUtils {
-	
+
 	/**
 	 * always ordered
 	 */
 	public record FloatRange(
 			float startInclusive,
 			float endInclusive) {
-		
+
 		public FloatRange {
 			if(startInclusive > endInclusive) {
 				var newEnd = startInclusive;
 				startInclusive = endInclusive;
-				endInclusive = newEnd; 	
+				endInclusive = newEnd;
 			}
 		}
-		
-		public boolean contains(float value) {
+
+		public boolean contains(final float value) {
 			if(value<startInclusive) return false;
 			if(value>endInclusive) return false;
 			return true;
 		}
-		
+
 	}
 
     public String format(final String elementFormat, final float[] array) {
@@ -57,6 +57,16 @@ public class FloatUtils {
             .collect(Collectors.joining(","));
         sb.append("}");
         return sb.toString();
+    }
+
+    public float[] toFloatArray(final double[] doubles) {
+        if(doubles==null)
+            return new float[0];
+        var floats = new float[doubles.length];
+        for (int i = 0; i < doubles.length; i++) {
+            floats[i] = (float)doubles[i];
+        }
+        return floats;
     }
 
 }
