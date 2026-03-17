@@ -26,6 +26,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Translate;
+import jcompute.core.util.coors.Cartesian2;
 import jcompute.core.util.coors.Cartesian3;
 import jcompute.core.util.coors.Polar3;
 import jcompute.fx.mouse.DragAndScrollHandler;
@@ -130,12 +131,13 @@ implements DragAndScrollHandler<jcompute.fx.cam.DefaultCameraControl.Snapshot> {
     public Snapshot onStartDragging(final MouseEvent e, final Consumer<Cursor> cursorCallback) {
         switch (e.getButton()) {
             case PRIMARY -> {
-                cursorCallback.accept(Cursor.HAND);
+                cursorCallback.accept(Cursor.CLOSED_HAND);
             }
             case SECONDARY -> {
-                cursorCallback.accept(Cursor.CROSSHAIR);
+                cursorCallback.accept(Cursor.MOVE);
             }
             case MIDDLE -> {
+                cursorCallback.accept(Cursor.CROSSHAIR);
             }
             default -> {}
         }
@@ -146,22 +148,38 @@ implements DragAndScrollHandler<jcompute.fx.cam.DefaultCameraControl.Snapshot> {
     public void onDragging(final Snapshot snapshot, final MouseEvent e, final Point2D offset) {
         switch (e.getButton()) {
             case PRIMARY -> {
-                // Orbits around the worldPivot keeping distance and camera angles (in the world) fixed.
+                //move both camera and the look-at point around within the x,y plane
+
                 var oldOrbit = snapshot.orbitSpherical();
-                var newOrbit = oldOrbit.orbit(
-                        oldOrbit.polarAngleRad() - 0.01 * offset.getY(),
-                        oldOrbit.azimuthRad() - 0.01 * offset.getX());
-                var newPos = newOrbit.toCartesian()
+                var worldMove = new Cartesian2(-offset.getY(), -offset.getX())
+                        .toPolar()
+                        .rotateRad(oldOrbit.azimuthRad())
+                        .toCartesian();
+
+                var newWorldPivot = snapshot.worldPivot().plus(worldMove);
+
+                copy(newWorldPivot, worldPivot);
+
+                var newPos = oldOrbit.toCartesian()
                         .plus(toCartesian(worldPivot));
                 position(newPos);
                 pointAtPivot();
             }
             case SECONDARY -> {
+                // Orbits around the worldPivot keeping distance and camera angles (in the world) fixed.
+                var oldOrbit = snapshot.orbitSpherical();
+                var newOrbit = oldOrbit.orbit(
+                        oldOrbit.polarAngleRad() - 0.004 * offset.getY(),
+                        oldOrbit.azimuthRad() - 0.004 * offset.getX());
+                var newPos = newOrbit.toCartesian()
+                        .plus(toCartesian(worldPivot));
+                position(newPos);
+                pointAtPivot();
+            }
+            case MIDDLE -> {
                 pointAtDirection(
                         snapshot.thetaDegree - 0.1 * offset.getY(),
                         snapshot.phiDegree - 0.1 * offset.getX());
-            }
-            case MIDDLE -> {
             }
             default -> {}
         }
@@ -181,12 +199,14 @@ implements DragAndScrollHandler<jcompute.fx.cam.DefaultCameraControl.Snapshot> {
     // -- HELPER
 
     record Snapshot(
+            Cartesian3 worldPivot,
             Polar3 orbitSpherical,
             double thetaDegree,
             double phiDegree) {
         Snapshot(final DefaultCameraControl control){
-            this(control.orbitVector().toSpherical(),
-                    control.thetaDegree.doubleValue(), control.phiDegree.doubleValue());
+            this(control.worldPivotCartesian(),
+                control.orbitVector().toSpherical(),
+                control.thetaDegree.doubleValue(), control.phiDegree.doubleValue());
         }
     }
 
@@ -206,6 +226,10 @@ implements DragAndScrollHandler<jcompute.fx.cam.DefaultCameraControl.Snapshot> {
     private static Cartesian3 toCartesian(final Translate t) {
         return new Cartesian3(t.getX(), t.getY(), t.getZ());
     }
+
+//    private static Cartesian2 toCartesian(final Point2D p) {
+//        return new Cartesian2(p.getX(), p.getY());
+//    }
 
     private static void copy(final Cartesian3 source, final Translate dest) {
         dest.setX(source.x());

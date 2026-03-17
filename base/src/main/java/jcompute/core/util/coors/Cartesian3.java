@@ -43,8 +43,16 @@ public record Cartesian3(double x, double y, double z) {
         return new Cartesian3(this.x + operand.x, this.y + operand.y, this.z + operand.z);
     }
 
+    public Cartesian3 plus(final Cartesian2 operand) {
+        return new Cartesian3(this.x + operand.x(), this.y + operand.y(), this.z);
+    }
+
     public Cartesian3 minus(final Cartesian3 operand) {
         return new Cartesian3(this.x - operand.x, this.y - operand.y, this.z - operand.z);
+    }
+
+    public Cartesian3 minus(final Cartesian2 operand) {
+        return new Cartesian3(this.x - operand.x(), this.y - operand.y(), this.z);
     }
 
     public Polar3 toSpherical() {

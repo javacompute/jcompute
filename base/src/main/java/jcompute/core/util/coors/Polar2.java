@@ -50,21 +50,21 @@ public record Polar2(
     public boolean isOrigin() {
         return r==0.;
     }
-    
-    public boolean isNorth(float toleranceDegree) {
+
+    public boolean isNorth(final float toleranceDegree) {
     	var range = new FloatRange(90f-toleranceDegree, 90f+toleranceDegree);
     	return range.contains((float)azimuthDeg());
     }
-    public boolean isSouth(float toleranceDegree) {
+    public boolean isSouth(final float toleranceDegree) {
     	var range = new FloatRange(-90f-toleranceDegree, -90f+toleranceDegree);
     	return range.contains((float)azimuthDeg());
     }
-    public boolean isWest(float toleranceDegree) {
+    public boolean isWest(final float toleranceDegree) {
     	var az = (float)azimuthDeg();
     	return new FloatRange(180f-toleranceDegree, 180f+toleranceDegree).contains(az)
     			|| new FloatRange(-180f-toleranceDegree, -180f+toleranceDegree).contains(az);
     }
-    public boolean isEast(float toleranceDegree) {
+    public boolean isEast(final float toleranceDegree) {
     	var range = new FloatRange(-toleranceDegree, toleranceDegree);
     	return range.contains((float)azimuthDeg());
     }
@@ -78,6 +78,13 @@ public record Polar2(
 
     public Polar2 orbit(final double azimuthRad) {
         return new Polar2(r, azimuthRad);
+    }
+
+    public Polar2 rotateRad(final double azimuthRad) {
+        return orbit(this.azimuthRad() + azimuthRad);
+    }
+    public Polar2 rotateDeg(final double azimuthDeg) {
+        return rotateRad(Math.toRadians(azimuthDeg));
     }
 
     public Cartesian2 toCartesian() {
