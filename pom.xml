@@ -36,7 +36,7 @@ additional
         <commons-compress.version>1.28.0</commons-compress.version>
 
         <jackson.version>3.1.0</jackson.version>
-        <javafx.version>25.0.2</javafx.version>
+        <javafx.version>26</javafx.version>
         <jocl.version>2.0.6</jocl.version>
         <slf4j-api.version>2.0.17</slf4j-api.version>
 
