@@ -107,6 +107,12 @@ public record LongArray(
         return toBuffer().array();
     }
 
+    @Override
+    public final String toString() {
+        var toStringHelper = new ToStringHelper(shape);
+        return toStringHelper.toString(gid->""+get(gid));
+    }
+
     // -- CONTRACT
 
     @Override

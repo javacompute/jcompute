@@ -44,7 +44,7 @@ public record FloatArray(
         return new FloatArray(shape, memorySegment);
     }
 
-    public static FloatArray wrap(final Arena arena, final float[] values) {
+    public static FloatArray wrap(final Arena arena, final float... values) {
         var array = FloatArray.of(arena, Shape.of(values.length));
         for (int i = 0; i < values.length; i++) {
             array.memorySegment.setAtIndex(ValueLayout.JAVA_FLOAT, i, values[i]);
@@ -118,10 +118,48 @@ public record FloatArray(
         return toBuffer().array();
     }
 
+    @Override
+    public final String toString() {
+        var toStringHelper = new ToStringHelper(shape);
+        return toStringHelper.toString(gid->""+get(gid));
+    }
+
     // -- VECTOR API
 
     public FloatVector floatVector(final VectorSpecies<Float> species, final int offset) {
         return FloatVector.fromMemorySegment(species, memorySegment, offset * Float.BYTES, ValueLayout.JAVA_FLOAT.order());
+    }
+
+    // -- TRANSFORM
+
+    /**
+     * Reinterprets the underlying memory segment, without modifying it.
+     */
+    public FloatArray reshape(final Shape newShape) {
+        if(newShape.totalSize() != this.shape().totalSize())
+            throw new IllegalArgumentException("Total size mismatch: %d <-> %d"
+                    .formatted(newShape.totalSize(), this.shape().totalSize()));
+        return new FloatArray(newShape, memorySegment);
+    }
+
+    /**
+     * Transposes first 2 dimensions. Creates a new memory segment in the process.
+     */
+    public FloatArray transpose(final Arena arena) {
+        return switch (shape.dimensionCount()){
+            case 1 -> this;
+            case 2 -> {
+                var newShape = Shape.of(shape.sizeY(), shape.sizeX());
+                var newArray = FloatArray.of(arena, newShape);
+                shape.forEach((i, j, _)->{
+                    var element = get(shape.gid2d(i, j));
+                    newArray.memorySegment.setAtIndex(ValueLayout.JAVA_FLOAT, newShape.gid2d(j, i), element);
+                });
+                yield newArray;
+            }
+            default ->
+                throw new IllegalArgumentException("Unexpected value: " + shape.dimensionCount());
+        };
     }
 
     // -- DOT PRODUCT
