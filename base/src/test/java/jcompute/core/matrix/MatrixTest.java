@@ -22,24 +22,34 @@ import java.lang.foreign.Arena;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jcompute.core.mem.FloatArray;
 import jcompute.core.shape.Shape;
 
-class MatrixMultiplyTest {
+class MatrixTest {
 
     @Test
-    void test() {
-
+    void transpose() {
         try(var arena = Arena.ofConfined()) {
-            var a = FloatArray.wrap(arena, 1f, 2f, 3f, 4f)
-                    .reshape(Shape.of(2, 2));
+            var a = FloatArray.wrap(arena, 1, 2, 3, 4, 5, 6)
+                    .reshape(Shape.of(2, 3));
             var b = a.transpose(arena);
+            assertEquals(FloatArray.wrap(arena, 1, 4, 2, 5, 3, 6)
+                    .reshape(Shape.of(3, 2)),
+                b);
+        }
+    }
 
-            System.err.println("%s".formatted(a));
-            System.err.println("%s".formatted(b));
-
-            MatrixMultiply.multiply(a, b);
-
+    @Test
+    void multiplyTransposed() {
+        try(var arena = Arena.ofConfined()) {
+            var a = FloatArray.wrap(arena, 1, 2, 3, 4, 5, 6)
+                    .reshape(Shape.of(2, 3));
+            var c = MatrixMultiply.multiplyTransposed(arena, a, a);
+            assertEquals(FloatArray.wrap(arena, 14, 32, 32, 77)
+                    .reshape(Shape.of(2, 2)),
+                c);
         }
     }
 

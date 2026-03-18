@@ -18,15 +18,37 @@
  */
 package jcompute.core.matrix;
 
+import java.lang.foreign.Arena;
+
 import lombok.experimental.UtilityClass;
 
 import jcompute.core.mem.FloatArray;
+import jcompute.core.shape.Shape;
 
 @UtilityClass
 public class MatrixMultiply {
 
-    public FloatArray multiply(final FloatArray a, final FloatArray b) {
-        return null;
+    public FloatArray multiplyTransposed(final Arena arena, final FloatArray a, final FloatArray b) {
+        if(!a.shape().equals(b.shape()))
+            throw new IllegalArgumentException("Shape mismatch: %s <-> %s"
+                    .formatted(a.shape(), b.shape()));
+        if(a.shape().dimensionCount()!=2)
+            throw new IllegalArgumentException("Invalid Shape dimension count: %d"
+                    .formatted(a.shape().dimensionCount()));
+
+        final var inShape = a.shape();
+        final long n = inShape.sizeX();
+        final var outShape = Shape.of(n, n);
+        final var r = FloatArray.of(arena, outShape);
+
+        for (long i = 0L; i < n; ++i) {
+            for (long j = 0L; j < n; ++j) {
+                float element = a.dotProduct(inShape.gid2d(i, 0), b, inShape.gid2d(j, 0), inShape.sizeY());
+                r.put(outShape.gid2d(i, j), element);
+            }
+        }
+
+        return r;
     }
 
 }

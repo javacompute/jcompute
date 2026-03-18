@@ -126,7 +126,7 @@ public record FloatArray(
 
     // -- VECTOR API
 
-    public FloatVector floatVector(final VectorSpecies<Float> species, final int offset) {
+    public FloatVector floatVector(final VectorSpecies<Float> species, final long offset) {
         return FloatVector.fromMemorySegment(species, memorySegment, offset * Float.BYTES, ValueLayout.JAVA_FLOAT.order());
     }
 
@@ -165,26 +165,26 @@ public record FloatArray(
     // -- DOT PRODUCT
 
     public float dotProductNonSimd(
-            final int thisOffset,
-            final FloatArray other, final int otherOffset,
-            final int size) {
+            final long thisOffset,
+            final FloatArray other, final long otherOffset,
+            final long size) {
         float result = 0f;
-        for (int j = 0; j < size; j++) {
+        for (long j = 0; j < size; j++) {
             result += this.get(thisOffset + j) * other.get(otherOffset + j);
         }
         return result;
     }
 
     public float dotProduct(
-            final int thisOffset,
-            final FloatArray other, final int otherOffset,
-            final int size) {
+            final long thisOffset,
+            final FloatArray other, final long otherOffset,
+            final long size) {
 
-        if(size < SPECIES.length()) return dotProductNonSimd(0, other, 0, size);
+        if(size < SPECIES.length()) return dotProductNonSimd(thisOffset, other, otherOffset, size);
 
         // perform dot product using Vector API
         var sum = FloatVector.zero(SPECIES);
-        int i = 0;
+        long i = 0;
         for (; i < size - SPECIES.length(); i += SPECIES.length()) {
             var a = this.floatVector(SPECIES, thisOffset + i);
             var b = other.floatVector(SPECIES, otherOffset + i);
