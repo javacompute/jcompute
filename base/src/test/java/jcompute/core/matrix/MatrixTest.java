@@ -19,6 +19,7 @@
 package jcompute.core.matrix;
 
 import java.lang.foreign.Arena;
+import java.util.function.DoubleBinaryOperator;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jcompute.core.mem.FloatArray;
 import jcompute.core.shape.Shape;
+import jcompute.core.util.function.FloatUnaryOperator;
 
 class MatrixTest {
 
@@ -51,6 +53,24 @@ class MatrixTest {
                     .reshape(Shape.of(2, 2)),
                 c);
         }
+    }
+
+    @Test
+    void sigmoid() {
+        // torch.special.expit(input, *, out=None) → Tensor
+        // Computes the expit (also known as the logistic sigmoid function) of the elements of input.
+        FloatUnaryOperator sigmoid = in->(float)(1./(1. + Math.exp(-in)));
+        assertEquals(0.7153f, sigmoid.applyAsFloat(0.9213f), 1E-4);
+        assertEquals(0.7481f, sigmoid.applyAsFloat(1.0887f), 1E-4);
+        assertEquals(0.2920f, sigmoid.applyAsFloat(-0.8858f), 1E-4);
+        assertEquals(0.1458f, sigmoid.applyAsFloat(-1.7683f), 1E-4);
+    }
+
+    @Test
+    void bceloss() {
+        DoubleBinaryOperator bceLoss = (x, y)->-(y*Math.log(x) + (1-y) * Math.log(1 - x));
+        assertEquals(0.0852, bceLoss.applyAsDouble(0.9183, 1), 1E-4);
+
     }
 
 }
