@@ -48,6 +48,8 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
+import jcompute.core.util.coors.Cartesian2;
+import jcompute.core.util.coors.Cartesian3;
 import jcompute.fx.cam.ControlableCamera;
 import jcompute.fx.cam.DefaultCameraControl;
 
@@ -226,6 +228,13 @@ public class FXExt {
 
     public Point2D asRotated90DegreeClockwise(final Point2D p) {
         return new Point2D(p.getY(), -p.getX());
+    }
+
+    public Cartesian2 toCartesian(final Point2D p) {
+        return new Cartesian2(p.getX(), p.getY());
+    }
+    public Cartesian3 toCartesian(final Point3D p) {
+        return new Cartesian3(p.getX(), p.getY(), p.getZ());
     }
 
 }
