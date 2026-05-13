@@ -38,7 +38,7 @@ additional
         <jackson.version>3.1.2</jackson.version>
         <javafx.version>26.0.1</javafx.version>
         <jocl.version>2.0.6</jocl.version>
-        <slf4j-api.version>2.0.17</slf4j-api.version>
+        <slf4j-api.version>2.0.18</slf4j-api.version>
 
         <lombok.version>1.18.46</lombok.version>
         <tukaani-xz.version>1.12</tukaani-xz.version>
