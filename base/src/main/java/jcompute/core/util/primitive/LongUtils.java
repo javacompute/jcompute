@@ -33,6 +33,25 @@ public class LongUtils {
                 | (leastSignificant & 0xffff_ffffL);
     }
 
+    // -- PICKING
+
+    public long[] pickByIndex(final long[] source, final int[] indices) {
+        final var v = new long[indices.length];
+        int i = 0;
+        for(int index : indices) {
+            v[i++] = source[index];
+        }
+        return v;
+    }
+
+    // -- BITS
+
+    public int nextSetBit(final long word, final int fromIndex) {
+        return word == 0L
+            ? 64
+            : Long.numberOfTrailingZeros(word & (0xffffffffffffffffL << fromIndex));
+    }
+
     // JUnit
     public long[] samples() {
         return new long[] {
