@@ -25,17 +25,19 @@ import jcompute.opencl.spi.OpenCLBindings;
 
 public interface ClPlatform {
 
-    public static List<ClPlatform> listPlatforms() {
-        return OpenCLBindings.getDefaultBinding().listPlatforms();
-    }
-
-    public static Stream<ClDevice> streamAll() {
-        return ClPlatform.listPlatforms().stream()
-                .flatMap(platform->platform.getDevices().stream());
-    }
+    String getPlatformName();
+    String getPlatformVendor();
+    String getPlatformVersion();
+    String getPlatformExtensions();
 
     List<ClDevice> getDevices();
 
-    String getPlatformVersion();
+    static List<ClPlatform> listPlatforms() {
+    	return OpenCLBindings.getDefaultBinding().listPlatforms();
+    }
 
+    static Stream<ClDevice> streamAll() {
+    	return ClPlatform.listPlatforms().stream()
+    			.flatMap(platform->platform.getDevices().stream());
+    }
 }

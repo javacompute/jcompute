@@ -50,7 +50,7 @@ public abstract class ClDevice {
     }
 
     public static ClDevice getDefaultOrElseFail() {
-        return getDefault().orElseThrow(()->new NoSuchElementException("could not find an ClDevice"));
+        return getDefault().orElseThrow(()->new NoSuchElementException("could not find a ClDevice"));
     }
 
     public static Optional<ClDevice> getBest(final Comparator<ClDevice> deviceComparator) {

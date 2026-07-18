@@ -31,24 +31,47 @@ import static org.bytedeco.opencl.global.OpenCL.CL_DEVICE_TYPE_ALL;
 import static org.bytedeco.opencl.global.OpenCL.clGetDeviceIDs;
 import static org.bytedeco.opencl.global.OpenCL.clGetPlatformInfo;
 
-import lombok.Getter;
-import lombok.experimental.Accessors;
-
 import jcompute.opencl.ClDevice;
 import jcompute.opencl.ClPlatform;
 
-public final class ClPlatformBd implements ClPlatform {
+record ClPlatformBd(
+		int index,
+		_cl_platform_id id,
+		String platformName,
+		String platformVendor,
+		String platformVersion,
+		String platformExtensions,
+		LazyConstant<List<ClDevice>> devicesLazy) implements ClPlatform {
 
-    @Getter @Accessors(fluent = true) private final _cl_platform_id id;
-    @Getter private final int index;
-    @Getter private final String platformVersion;
-    @Getter(lazy = true)
-    private final List<ClDevice> devices = listDevices(this);
+	ClPlatformBd(
+			final int index,
+			final _cl_platform_id id,
+			final String platformName,
+			final String platformVendor,
+			final String platformVersion,
+			final String platformExtensions,
+			final LazyConstant<List<ClDevice>> devicesLazy) {
+		this.index = index;
+		this.id = id;
+		this.platformName = platformName!=null
+				? platformName
+				: getString(id, OpenCL.CL_PLATFORM_NAME);
+		this.platformVendor = platformName!=null
+				? platformVendor
+				: getString(id, OpenCL.CL_PLATFORM_VENDOR);
+		this.platformVersion = platformVersion!=null
+				? platformVersion
+				: getString(id, OpenCL.CL_PLATFORM_VERSION);
+		this.platformExtensions = platformExtensions!=null
+				? platformExtensions
+				: getString(id, OpenCL.CL_PLATFORM_EXTENSIONS);
+		this.devicesLazy = devicesLazy!=null
+				? devicesLazy
+				: LazyConstant.of(()->listDevices(this));
+	}
 
     ClPlatformBd(final int index, final _cl_platform_id platformId) {
-        this.index = index;
-        this.id = platformId;
-        this.platformVersion = getString(platformId, OpenCL.CL_PLATFORM_VERSION);
+    	this(index, platformId, null, null, null, null, null);
     }
 
     // -- HELPER
@@ -77,4 +100,13 @@ public final class ClPlatformBd implements ClPlatform {
         }
     }
 
+	@Override public String getPlatformName() { return platformName; }
+	@Override public String getPlatformVendor() { return platformVendor; }
+	@Override public String getPlatformVersion() { return platformVersion; }
+	@Override public String getPlatformExtensions() { return platformExtensions; }
+
+	@Override
+	public List<ClDevice> getDevices() {
+		return devicesLazy.get();
+	}
 }
