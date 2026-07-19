@@ -6,6 +6,9 @@
 | jcompute-opencl-applib
 | Thin API layer for Java OpenCL programming.
 
+| jcompute-opencl-ffm
+| Java Binding for OpenCL (optional)
+
 | jcompute-opencl-bytedeco
 | Java Binding for OpenCL (optional)
 

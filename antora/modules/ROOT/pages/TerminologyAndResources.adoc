@@ -9,6 +9,25 @@ OpenCL 2.1 Quick Ref Card: https://www.khronos.org/registry/cl/sdk/2.1/docs/Open
 
 == Java Bindings
 
+=== Foreign Function and Memory API (FFM) Module (built-in)
+
+As generated via *jextract*. 
+
+(e.g. get _jextract_ from https://jdk.java.net/jextract/)
+
+[source,bash]
+.Generating OpenCL Java sources (using ROCm 7.14 on Debian)
+----
+cd /tmp
+mkdir generated
+jextract \ 
+  --output generated \
+  --target-package jcompute.opencl.ffm  
+  -I/opt/rocm/include \
+  -I/opt/rocm/include/CL \
+  /opt/rocm/include/CL/opencl.h
+----
+
 === JavaCPP(org.bytedeco)
 * OpenCL: 3.0 
 * Baseline: Java 7 SE

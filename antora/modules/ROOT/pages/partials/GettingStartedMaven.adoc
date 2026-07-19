@@ -25,6 +25,15 @@
 Use either one of the provided bindings:
 
 [source,xml]
+.Maven using Foreign Function & Memory API Binding
+----
+<dependency>
+    <groupId>io.github.javacompute</groupId>
+    <artifactId>jcompute-opencl-ffm</artifactId>
+</dependency>
+----
+
+[source,xml]
 .Maven using ByteDeco Binding
 ----
 <dependency>
