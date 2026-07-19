@@ -10,6 +10,9 @@ OpenCL 2.1 Quick Ref Card: https://www.khronos.org/registry/cl/sdk/2.1/docs/Open
 == Java Bindings
 
 === Foreign Function and Memory API (FFM) Module (built-in)
+* OpenCL: 2.2 
+* Baseline: Java 26 (preview)
+* JVM Options: `--enable-preview --add-modules jdk.incubator.vector`
 
 As generated via *jextract*. 
 
