@@ -18,7 +18,12 @@
  */
 package jcompute.opencl.spi;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import jcompute.opencl.ClBinding;
+import jcompute.opencl.ClBinding.NamedClBinding;
+import jcompute.opencl.ClPlatform;
 
 public interface OpenCLBindingProvider {
 
@@ -26,5 +31,19 @@ public interface OpenCLBindingProvider {
      * Entry point into the OpenCL world.
      */
     ClBinding getBinding();
+
+    public abstract class OpenCLBindingProviderAbstract implements OpenCLBindingProvider {
+
+    	private final LazyConstant<ClBinding> clBindingLazy;
+
+    	protected OpenCLBindingProviderAbstract(final String name, final Supplier<List<ClPlatform>> bindingFactory) {
+    		this.clBindingLazy = LazyConstant.of(()->new NamedClBinding(name, bindingFactory.get()));
+    	}
+
+		@Override final public ClBinding getBinding() {
+			return clBindingLazy.get();
+		}
+
+    }
 
 }

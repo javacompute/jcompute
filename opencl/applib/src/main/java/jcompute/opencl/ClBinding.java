@@ -26,4 +26,11 @@ import java.util.List;
 public interface ClBinding {
 
     List<ClPlatform> listPlatforms();
+
+    public record NamedClBinding(String name, List<ClPlatform> listPlatforms) implements ClBinding {
+    	@Override
+    	public final String toString() {
+    		return name;
+    	}
+    }
 }

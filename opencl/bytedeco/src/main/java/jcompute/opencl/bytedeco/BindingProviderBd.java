@@ -28,30 +28,16 @@ import org.bytedeco.opencl.global.OpenCL;
 
 import static org.bytedeco.opencl.global.OpenCL.clGetPlatformIDs;
 
-import lombok.Getter;
-
-import jcompute.opencl.ClBinding;
 import jcompute.opencl.ClPlatform;
-import jcompute.opencl.spi.OpenCLBindingProvider;
+import jcompute.opencl.spi.OpenCLBindingProvider.OpenCLBindingProviderAbstract;
 
-public final class BindingProviderBd implements OpenCLBindingProvider {
+public final class BindingProviderBd extends OpenCLBindingProviderAbstract {
 
-    @Override
-    public ClBinding getBinding() {
-        return BindingHolder.getBinding();
-    }
-
-    private final static class BindingHolder {
-        @Getter(lazy = true)
-        private final static ClBinding binding = createBinding();
-    }
+	public BindingProviderBd() {
+		super("ByteDeco", BindingProviderBd::createPlatforms);
+	}
 
     // -- PLATFORMS
-
-    private static ClBinding createBinding() {
-        final var platforms = createPlatforms();
-        return () -> platforms;
-    }
 
     /**
      * Lists all available OpenCL implementations.

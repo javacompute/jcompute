@@ -27,30 +27,16 @@ import org.jocl.cl_platform_id;
 
 import static org.jocl.CL.clGetPlatformIDs;
 
-import lombok.Getter;
-
-import jcompute.opencl.ClBinding;
 import jcompute.opencl.ClPlatform;
-import jcompute.opencl.spi.OpenCLBindingProvider;
+import jcompute.opencl.spi.OpenCLBindingProvider.OpenCLBindingProviderAbstract;
 
-public final class BindingProviderJocl implements OpenCLBindingProvider {
+public final class BindingProviderJocl extends OpenCLBindingProviderAbstract {
 
-    @Override
-    public ClBinding getBinding() {
-        return BindingHolder.getBinding();
-    }
-
-    private final static class BindingHolder {
-        @Getter(lazy = true)
-        private final static ClBinding binding = createBinding();
-    }
+	public BindingProviderJocl() {
+		super("Jocl", BindingProviderJocl::createPlatforms);
+	}
 
     // -- PLATFORMS
-
-    private static ClBinding createBinding() {
-        final var platforms = createPlatforms();
-        return () -> platforms;
-    }
 
     /**
      * Lists all available OpenCL implementations.

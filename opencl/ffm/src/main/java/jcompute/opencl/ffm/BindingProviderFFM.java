@@ -24,20 +24,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import jcompute.opencl.ClBinding;
 import jcompute.opencl.ClPlatform;
 import jcompute.opencl.ffm.gen.opencl_h_1;
-import jcompute.opencl.spi.OpenCLBindingProvider;
+import jcompute.opencl.spi.OpenCLBindingProvider.OpenCLBindingProviderAbstract;
 
-public class BindingProviderFFM implements OpenCLBindingProvider {
+public class BindingProviderFFM extends OpenCLBindingProviderAbstract {
 
-	final LazyConstant<ClBinding> clBindingLazy =
-			LazyConstant.of(() -> (BindingProviderFFM::createPlatforms));
-
-    @Override
-    public ClBinding getBinding() {
-        return clBindingLazy.get();
-    }
+	public BindingProviderFFM() {
+		super("FFM", BindingProviderFFM::createPlatforms);
+	}
 
     // -- PLATFORMS
 
