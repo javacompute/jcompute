@@ -54,11 +54,12 @@ public class OpenCLBindings {
 
     private static ClBinding defaultBinding() {
         var availableBindings = getBindings();
-        if(availableBindings.isEmpty()) {
-            throw new IllegalStateException("Service Loader failed to find a OpenCLBindingProvider.");
-        }
+        if(availableBindings.isEmpty())
+			throw new IllegalStateException("Service Loader failed to find a OpenCLBindingProvider.");
         if(availableBindings.size()>1) {
-            System.err.printf("Mmulitple binding providers found, using first in list %s.%n", availableBindings);
+            System.out.println("jcompute.opencl.spi.OpenCLBindings: Mulitple OpenCL bindings found, using first in list %s.".formatted(availableBindings));
+        } else {
+        	System.out.println("jcompute.opencl.spi.OpenCLBindings: using OpenCL binding %s.".formatted(availableBindings.get(0)));
         }
         return availableBindings.getFirst();
     }
