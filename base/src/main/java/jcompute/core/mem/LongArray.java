@@ -27,6 +27,10 @@ import java.lang.foreign.ValueLayout;
 import java.nio.LongBuffer;
 import java.util.function.LongUnaryOperator;
 
+import static java.lang.foreign.ValueLayout.JAVA_LONG;
+
+import org.jspecify.annotations.Nullable;
+
 import jcompute.core.io.LongMarshaller;
 import jcompute.core.shape.Shape;
 
@@ -34,7 +38,7 @@ public record LongArray(
         Shape shape,
         MemorySegment memorySegment) implements JComputeArray {
 
-    private final static ValueLayout.OfLong VALUE_LAYOUT = ValueLayout.JAVA_LONG;
+    private final static ValueLayout.OfLong VALUE_LAYOUT = JAVA_LONG;
 
     public static LongArray of(final Arena arena, final Shape shape) {
         var layout = MemoryLayout.sequenceLayout(shape.totalSize(), VALUE_LAYOUT);
@@ -42,12 +46,21 @@ public record LongArray(
         return new LongArray(shape, memorySegment);
     }
 
-    public static LongArray wrap(final Arena arena, final long[] values) {
-        var array = LongArray.of(arena, Shape.of(values.length));
-        for (int i = 0; i < values.length; i++) {
-            array.memorySegment.setAtIndex(VALUE_LAYOUT, i, values[i]);
-        }
-        return array;
+    public static LongArray wrap(final long ... values) {
+        return new LongArray(Shape.of(values.length), MemorySegment.ofArray(values));
+    }
+
+    public static LongArray wrap(final Arena arena, final long... values) {
+        return LongArray.of(arena, Shape.of(values.length))
+        		.copyFrom(values);
+    }
+
+    public LongArray copyFrom(final @Nullable long[] values) {
+    	if(values==null)
+    		return this;
+    	final int size = (int)Math.min(shape.totalSize(), values.length);
+    	MemorySegment.copy(values, 0, memorySegment, VALUE_LAYOUT, 0L, size);
+    	return this;
     }
 
     @Override
@@ -104,7 +117,7 @@ public record LongArray(
     }
 
     public long[] toArray() {
-        return toBuffer().array();
+    	return memorySegment.toArray(VALUE_LAYOUT);
     }
 
     @Override

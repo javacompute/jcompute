@@ -26,6 +26,10 @@ import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.nio.ByteBuffer;
 
+import static java.lang.foreign.ValueLayout.JAVA_BYTE;
+
+import org.jspecify.annotations.Nullable;
+
 import jcompute.core.shape.Shape;
 import jcompute.core.util.function.LongToByteFunction;
 import jcompute.core.util.primitive.ByteUtils;
@@ -34,23 +38,34 @@ public record ByteArray(
         Shape shape,
         MemorySegment memorySegment) implements JComputeArray {
 
+	private final static ValueLayout.OfByte VALUE_LAYOUT = JAVA_BYTE;
+
     public static ByteArray of(final Arena arena, final Shape shape) {
-        var layout = MemoryLayout.sequenceLayout(shape.totalSize(), ValueLayout.JAVA_BYTE);
+        var layout = MemoryLayout.sequenceLayout(shape.totalSize(), VALUE_LAYOUT);
         var memorySegment = arena.allocate(layout);
         return new ByteArray(shape, memorySegment);
     }
 
-    public static ByteArray wrap(final Arena arena, final byte[] values) {
-        var array = ByteArray.of(arena, Shape.of(values.length));
-        for (int i = 0; i < values.length; i++) {
-            array.memorySegment.setAtIndex(ValueLayout.JAVA_BYTE, i, values[i]);
-        }
-        return array;
+    public static ByteArray wrap(final byte... values) {
+        return new ByteArray(Shape.of(values.length), MemorySegment.ofArray(values));
+    }
+
+    public static ByteArray wrap(final Arena arena, final byte... values) {
+        return ByteArray.of(arena, Shape.of(values.length))
+        		.copyFrom(values);
+    }
+
+    public ByteArray copyFrom(final @Nullable byte[] values) {
+    	if(values==null)
+    		return this;
+    	final int size = (int)Math.min(shape.totalSize(), values.length);
+    	MemorySegment.copy(values, 0, memorySegment, VALUE_LAYOUT, 0L, size);
+    	return this;
     }
 
     @Override
     public ValueLayout valueLayout() {
-        return ValueLayout.JAVA_BYTE;
+        return VALUE_LAYOUT;
     }
 
     /**
@@ -58,7 +73,7 @@ public record ByteArray(
      * @param gid the global index into the underlying buffer
      */
     public byte get(final long gid) {
-        return memorySegment.getAtIndex(ValueLayout.JAVA_BYTE, gid);
+        return memorySegment.getAtIndex(VALUE_LAYOUT, gid);
     }
 
     /**
@@ -67,7 +82,7 @@ public record ByteArray(
      * @param value the {@code byte} value to copy
      */
     public ByteArray put(final long gid, final byte value) {
-        memorySegment.setAtIndex(ValueLayout.JAVA_BYTE, gid, value);
+        memorySegment.setAtIndex(VALUE_LAYOUT, gid, value);
         return this;
     }
 
@@ -101,7 +116,7 @@ public record ByteArray(
     }
 
     public byte[] toArray() {
-        return toBuffer().array();
+        return memorySegment.toArray(JAVA_BYTE);
     }
 
     @Override

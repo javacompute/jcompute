@@ -24,29 +24,44 @@ import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.nio.DoubleBuffer;
 
+import static java.lang.foreign.ValueLayout.JAVA_DOUBLE;
+
+import org.jspecify.annotations.Nullable;
+
 import jcompute.core.shape.Shape;
 
 public record DoubleArray(
         Shape shape,
         MemorySegment memorySegment) implements JComputeArray {
 
+	private final static ValueLayout.OfDouble VALUE_LAYOUT = JAVA_DOUBLE;
+
     public static DoubleArray of(final Arena arena, final Shape shape) {
-        var layout = MemoryLayout.sequenceLayout(shape.totalSize(), ValueLayout.JAVA_DOUBLE);
+        var layout = MemoryLayout.sequenceLayout(shape.totalSize(), VALUE_LAYOUT);
         var memorySegment = arena.allocate(layout);
         return new DoubleArray(shape, memorySegment);
     }
 
-    public static DoubleArray wrap(final Arena arena, final double[] values) {
-        var array = DoubleArray.of(arena, Shape.of(values.length));
-        for (int i = 0; i < values.length; i++) {
-            array.memorySegment.setAtIndex(ValueLayout.JAVA_DOUBLE, i, values[i]);
-        }
-        return array;
+    public static DoubleArray wrap(final double... values) {
+    	return new DoubleArray(Shape.of(values.length), MemorySegment.ofArray(values));
+    }
+
+    public static DoubleArray wrap(final Arena arena, final double... values) {
+        return DoubleArray.of(arena, Shape.of(values.length))
+        		.copyFrom(values);
+    }
+
+    public DoubleArray copyFrom(final @Nullable double[] values) {
+    	if(values==null)
+    		return this;
+    	final int size = (int)Math.min(shape.totalSize(), values.length);
+    	MemorySegment.copy(values, 0, memorySegment, VALUE_LAYOUT, 0L, size);
+    	return this;
     }
 
     @Override
     public ValueLayout valueLayout() {
-        return ValueLayout.JAVA_DOUBLE;
+        return VALUE_LAYOUT;
     }
 
     /**
@@ -54,7 +69,7 @@ public record DoubleArray(
      * @param gid the global index into the underlying buffer
      */
     public double get(final long gid) {
-        return memorySegment.getAtIndex(ValueLayout.JAVA_DOUBLE, gid);
+        return memorySegment.getAtIndex(VALUE_LAYOUT, gid);
     }
 
     /**
@@ -64,7 +79,7 @@ public record DoubleArray(
      * @return this
      */
     public DoubleArray put(final long gid, final double value) {
-        memorySegment.setAtIndex(ValueLayout.JAVA_DOUBLE, gid, value);
+        memorySegment.setAtIndex(VALUE_LAYOUT, gid, value);
         return this;
     }
 
@@ -78,7 +93,7 @@ public record DoubleArray(
     }
 
     public double[] toArray() {
-        return toBuffer().array();
+    	return memorySegment.toArray(VALUE_LAYOUT);
     }
 
     @Override

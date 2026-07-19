@@ -18,6 +18,8 @@
  */
 package jcompute.opencl;
 
+import org.jspecify.annotations.Nullable;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +48,7 @@ public abstract class ClCommandQueue implements ClResource {
             ClKernel kernel,
             int work_dim,
             Shape globalSize,
-            Shape localSize);
+            @Nullable Shape localSize);
 
     @Override
     public final void free() {

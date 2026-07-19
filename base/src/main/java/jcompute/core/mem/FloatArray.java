@@ -24,6 +24,10 @@ import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 import java.nio.FloatBuffer;
 
+import static java.lang.foreign.ValueLayout.JAVA_FLOAT;
+
+import org.jspecify.annotations.Nullable;
+
 import jcompute.core.shape.Shape;
 import jcompute.core.util.function.FloatUnaryOperator;
 import jdk.incubator.vector.FloatVector;
@@ -35,26 +39,37 @@ public record FloatArray(
         Shape shape,
         MemorySegment memorySegment) implements JComputeArray {
 
+	private final static ValueLayout.OfFloat VALUE_LAYOUT = JAVA_FLOAT;
+
     public final static VectorSpecies<Float> SPECIES = VectorShape.forBitSize(VECTOR_BIT_SIZE)
         .withLanes(float.class); //  e.g. FloatVector.SPECIES_256;
 
     public static FloatArray of(final Arena arena, final Shape shape) {
-        var layout = MemoryLayout.sequenceLayout(shape.totalSize(), ValueLayout.JAVA_FLOAT);
+        var layout = MemoryLayout.sequenceLayout(shape.totalSize(), VALUE_LAYOUT);
         var memorySegment = arena.allocate(layout);
         return new FloatArray(shape, memorySegment);
     }
 
+    public static FloatArray wrap(final float... values) {
+    	return new FloatArray(Shape.of(values.length), MemorySegment.ofArray(values));
+    }
+
     public static FloatArray wrap(final Arena arena, final float... values) {
-        var array = FloatArray.of(arena, Shape.of(values.length));
-        for (int i = 0; i < values.length; i++) {
-            array.memorySegment.setAtIndex(ValueLayout.JAVA_FLOAT, i, values[i]);
-        }
-        return array;
+        return FloatArray.of(arena, Shape.of(values.length))
+        		.copyFrom(values);
+    }
+
+    public FloatArray copyFrom(final @Nullable float[] values) {
+    	if(values==null)
+    		return this;
+    	final int size = (int)Math.min(shape.totalSize(), values.length);
+    	MemorySegment.copy(values, 0, memorySegment, VALUE_LAYOUT, 0L, size);
+    	return this;
     }
 
     @Override
     public ValueLayout valueLayout() {
-        return ValueLayout.JAVA_FLOAT;
+        return VALUE_LAYOUT;
     }
 
     /**
@@ -62,7 +77,7 @@ public record FloatArray(
      * @param gid the global index into the underlying buffer
      */
     public float get(final long gid) {
-        return memorySegment.getAtIndex(ValueLayout.JAVA_FLOAT, gid);
+        return memorySegment.getAtIndex(VALUE_LAYOUT, gid);
     }
 
     /**
@@ -72,7 +87,7 @@ public record FloatArray(
      * @return this
      */
     public FloatArray put(final long gid, final float value) {
-        memorySegment.setAtIndex(ValueLayout.JAVA_FLOAT, gid, value);
+        memorySegment.setAtIndex(VALUE_LAYOUT, gid, value);
         return this;
     }
 
@@ -100,7 +115,7 @@ public record FloatArray(
     //TODO needs performance testing to see if using FloatBuffer is any faster
     public FloatArray mapInPlace(final long startGid, final long endGid, final FloatUnaryOperator mapper) {
         for (long gid = startGid; gid < endGid; ++gid) {
-            memorySegment.setAtIndex(ValueLayout.JAVA_FLOAT, gid, mapper.applyAsFloat(get(gid)));
+            memorySegment.setAtIndex(VALUE_LAYOUT, gid, mapper.applyAsFloat(get(gid)));
         }
         return this;
     }
@@ -115,7 +130,7 @@ public record FloatArray(
     }
 
     public float[] toArray() {
-        return toBuffer().array();
+    	return memorySegment.toArray(VALUE_LAYOUT);
     }
 
     @Override
@@ -127,7 +142,7 @@ public record FloatArray(
     // -- VECTOR API
 
     public FloatVector floatVector(final VectorSpecies<Float> species, final long offset) {
-        return FloatVector.fromMemorySegment(species, memorySegment, offset * Float.BYTES, ValueLayout.JAVA_FLOAT.order());
+        return FloatVector.fromMemorySegment(species, memorySegment, offset * Float.BYTES, VALUE_LAYOUT.order());
     }
 
     // -- TRANSFORM
@@ -153,7 +168,7 @@ public record FloatArray(
                 var newArray = FloatArray.of(arena, newShape);
                 shape.forEach((i, j, _)->{
                     var element = get(shape.gid2d(i, j));
-                    newArray.memorySegment.setAtIndex(ValueLayout.JAVA_FLOAT, newShape.gid2d(j, i), element);
+                    newArray.memorySegment.setAtIndex(VALUE_LAYOUT, newShape.gid2d(j, i), element);
                 });
                 yield newArray;
             }

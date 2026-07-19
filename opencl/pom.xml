@@ -39,6 +39,7 @@
 
     <modules>
         <module>applib</module>
+        <module>ffm</module>
         <module>bytedeco</module>
         <module>jocl</module>
     </modules>

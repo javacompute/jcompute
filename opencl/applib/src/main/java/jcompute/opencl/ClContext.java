@@ -44,10 +44,9 @@ public abstract class ClContext implements AutoCloseable {
     protected abstract int releaseContextIntenral();
 
     public final ClDevice getSingleDeviceElseFail() {
-        if(devices().size()!=1) {
-            throw new IllegalArgumentException(String.format(
+        if(devices().size()!=1)
+			throw new IllegalArgumentException(String.format(
                     "context %s is required to be bound to exaclty one device", this));
-        }
         return devices().get(0);
     }
 

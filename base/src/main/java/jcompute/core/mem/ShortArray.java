@@ -25,6 +25,8 @@ import java.lang.foreign.ValueLayout;
 import java.lang.foreign.ValueLayout.OfShort;
 import java.nio.ShortBuffer;
 
+import org.jspecify.annotations.Nullable;
+
 import jcompute.core.shape.Shape;
 
 public record ShortArray(
@@ -39,12 +41,21 @@ public record ShortArray(
         return new ShortArray(shape, memorySegment);
     }
 
-    public static ShortArray wrap(final Arena arena, final short[] values) {
-        var array = ShortArray.of(arena, Shape.of(values.length));
-        for (int i = 0; i < values.length; i++) {
-            array.memorySegment.setAtIndex(VALUE_LAYOUT, i, values[i]);
-        }
-        return array;
+    public static ShortArray wrap(final short ... values) {
+    	return new ShortArray(Shape.of(values.length), MemorySegment.ofArray(values));
+    }
+
+    public static ShortArray wrap(final Arena arena, final short... values) {
+        return ShortArray.of(arena, Shape.of(values.length))
+        		.copyFrom(values);
+    }
+
+    public ShortArray copyFrom(final @Nullable short[] values) {
+    	if(values==null)
+    		return this;
+    	final int size = (int)Math.min(shape.totalSize(), values.length);
+    	MemorySegment.copy(values, 0, memorySegment, VALUE_LAYOUT, 0L, size);
+    	return this;
     }
 
     @Override
@@ -100,9 +111,9 @@ public record ShortArray(
         return memorySegment.asByteBuffer().asShortBuffer();
     }
 
-//    public short[] toArray() {
-//        return memorySegment().toArray(ValueLayout.JAVA_SHORT);
-//    }
+    public short[] toArray() {
+    	return memorySegment.toArray(VALUE_LAYOUT);
+    }
 
     @Override
     public final String toString() {

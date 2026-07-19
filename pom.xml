@@ -12,248 +12,270 @@ additional
 	OF ANY KIND, either express or implied. See the License for the specific
 	language governing permissions and limitations under the License. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.javacompute</groupId>
-    <artifactId>jcompute-bom</artifactId>
-    <version>${revision}</version>
+	<groupId>io.github.javacompute</groupId>
+	<artifactId>jcompute-bom</artifactId>
+	<version>${revision}</version>
 
-    <name>JCompute - BOM</name>
-    <description>JCompute - Bill of Material (BOM)</description>
-    <url>https://github.com/javacompute/jcompute</url>
+	<name>JCompute - BOM</name>
+	<description>JCompute - Bill of Material (BOM)</description>
+	<url>https://github.com/javacompute/jcompute</url>
 
-    <packaging>pom</packaging>
+	<packaging>pom</packaging>
 
-    <properties>
-        <revision>1.0.0-SNAPSHOT</revision>
-        <maven.compiler.release>26</maven.compiler.release>
-        <maven.compiler.arg>--enable-preview</maven.compiler.arg>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<properties>
+		<revision>1.0.0-SNAPSHOT</revision>
+		<maven.compiler.release>26</maven.compiler.release>
+		<maven.compiler.arg>--enable-preview</maven.compiler.arg>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <bytedeco.version>1.5.13</bytedeco.version>
-        <bytedeco-opencl.version>3.0-1.5.13</bytedeco-opencl.version>
-        <commons-compress.version>1.28.0</commons-compress.version>
+		<bytedeco.version>1.5.13</bytedeco.version>
+		<bytedeco-opencl.version>3.0-1.5.13</bytedeco-opencl.version>
+		<commons-compress.version>1.28.0</commons-compress.version>
 
-        <jackson.version>3.2.1</jackson.version>
-        <javafx.version>26.0.1</javafx.version>
-        <jocl.version>2.0.6</jocl.version>
-        <slf4j-api.version>2.0.18</slf4j-api.version>
+		<jackson.version>3.2.1</jackson.version>
+		<javafx.version>26.0.1</javafx.version>
+		<jocl.version>2.0.6</jocl.version>
+		<slf4j-api.version>2.0.18</slf4j-api.version>
 
-        <lombok.version>1.18.46</lombok.version>
-        <tukaani-xz.version>1.12</tukaani-xz.version>
+		<lombok.version>1.18.46</lombok.version>
+		<tukaani-xz.version>1.12</tukaani-xz.version>
 
-        <!-- testing -->
-        <junit.version>6.1.2</junit.version>
-    </properties>
+		<!-- testing -->
+		<junit.version>6.1.2</junit.version>
+	</properties>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>versions-maven-plugin</artifactId>
-                    <version>2.21.0</version>
-                    <!-- usage: mvn versions:set -Drevision=1.0.0-SNAPSHOT 
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>2.21.0</version>
+					<!-- usage: mvn versions:set -Drevision=1.0.0-SNAPSHOT 
                                 to be run before install or deploy -->
-                    <configuration>
-                        <newVersion>${revision}</newVersion>
-                        <processAllModules>true</processAllModules>
-                        <generateBackupPoms>false</generateBackupPoms>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>set</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+					<configuration>
+						<newVersion>${revision}</newVersion>
+						<processAllModules>true</processAllModules>
+						<generateBackupPoms>false</generateBackupPoms>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>set</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
 
-    <dependencyManagement>
-        <dependencies>
+				<!-- Add generated folder to build path -->
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>3.6.1</version>
+					<executions>
+						<execution>
+							<id>add-source</id>
+							<phase>generate-sources</phase>
+							<goals>
+								<goal>add-source</goal>
+							</goals>
+							<configuration>
+								<sources>
+									<source>src/generated/java</source>
+								</sources>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
 
-            <!-- SUB MODULES -->
+			</plugins>
+		</pluginManagement>
+	</build>
 
-            <dependency>
-                <groupId>io.github.javacompute</groupId>
-                <artifactId>jcompute-parent</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+	<dependencyManagement>
+		<dependencies>
 
-            <dependency>
-                <groupId>io.github.javacompute</groupId>
-                <artifactId>jcompute-ai</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+			<!-- SUB MODULES -->
 
-            <dependency>
-                <groupId>io.github.javacompute</groupId>
-                <artifactId>jcompute-base</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>io.github.javacompute</groupId>
+				<artifactId>jcompute-parent</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>io.github.javacompute</groupId>
-                <artifactId>jcompute-opencl-applib</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>io.github.javacompute</groupId>
+				<artifactId>jcompute-ai</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>io.github.javacompute</groupId>
-                <artifactId>jcompute-opencl-bytedeco</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>io.github.javacompute</groupId>
+				<artifactId>jcompute-base</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>io.github.javacompute</groupId>
-                <artifactId>jcompute-opencl-jocl</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>io.github.javacompute</groupId>
+				<artifactId>jcompute-opencl-applib</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>io.github.javacompute</groupId>
-                <artifactId>jcompute-combinatorics</artifactId>
-                <version>${project.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>io.github.javacompute</groupId>
+				<artifactId>jcompute-opencl-bytedeco</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
-            <!-- BYTEDECO-->
+			<dependency>
+				<groupId>io.github.javacompute</groupId>
+				<artifactId>jcompute-opencl-jocl</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.bytedeco</groupId>
-                <artifactId>javacpp</artifactId>
-                <version>${bytedeco.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>io.github.javacompute</groupId>
+				<artifactId>jcompute-combinatorics</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.bytedeco</groupId>
-                <artifactId>javacpp-platform</artifactId>
-                <version>${bytedeco.version}</version>
-            </dependency>
+			<!-- BYTEDECO-->
 
-            <dependency>
-                <groupId>org.bytedeco</groupId>
-                <artifactId>opencl-platform</artifactId>
-                <version>${bytedeco-opencl.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.bytedeco</groupId>
+				<artifactId>javacpp</artifactId>
+				<version>${bytedeco.version}</version>
+			</dependency>
 
-            <!-- JOCL -->
+			<dependency>
+				<groupId>org.bytedeco</groupId>
+				<artifactId>javacpp-platform</artifactId>
+				<version>${bytedeco.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.jocl</groupId>
-                <artifactId>jocl</artifactId>
-                <version>${jocl.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.bytedeco</groupId>
+				<artifactId>opencl-platform</artifactId>
+				<version>${bytedeco-opencl.version}</version>
+			</dependency>
 
-            <!-- APACHE -->
+			<!-- JOCL -->
 
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-compress</artifactId>
-                <version>${commons-compress.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.jocl</groupId>
+				<artifactId>jocl</artifactId>
+				<version>${jocl.version}</version>
+			</dependency>
 
-            <!-- JAVAFX -->
+			<!-- APACHE -->
 
-            <dependency>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-base</artifactId>
-                <version>${javafx.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>${commons-compress.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-controls</artifactId>
-                <version>${javafx.version}</version>
-            </dependency>
+			<!-- JAVAFX -->
 
-            <dependency>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-swing</artifactId>
-                <version>${javafx.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.openjfx</groupId>
+				<artifactId>javafx-base</artifactId>
+				<version>${javafx.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-fxml</artifactId>
-                <version>${javafx.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.openjfx</groupId>
+				<artifactId>javafx-controls</artifactId>
+				<version>${javafx.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-web</artifactId>
-                <version>${javafx.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.openjfx</groupId>
+				<artifactId>javafx-swing</artifactId>
+				<version>${javafx.version}</version>
+			</dependency>
 
-            <!-- LOGGING -->
+			<dependency>
+				<groupId>org.openjfx</groupId>
+				<artifactId>javafx-fxml</artifactId>
+				<version>${javafx.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j-api.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.openjfx</groupId>
+				<artifactId>javafx-web</artifactId>
+				<version>${javafx.version}</version>
+			</dependency>
 
-            <!-- OTHER -->
+			<!-- LOGGING -->
 
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j-api.version}</version>
+			</dependency>
 
-            <dependency>
-                <groupId>org.tukaani</groupId>
-                <artifactId>xz</artifactId>
-                <version>${tukaani-xz.version}</version>
-            </dependency>
-            
-            <dependency>
-                <groupId>tools.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
+			<!-- OTHER -->
 
-        </dependencies>
-    </dependencyManagement>
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${lombok.version}</version>
+			</dependency>
 
-    <modules>
-        <module>parent</module>
-        <module>base</module>
-        <module>opencl</module>
-        <module>combinatorics</module>
-        <module>ai</module>
-        <module>fx</module>
-    </modules>
+			<dependency>
+				<groupId>org.tukaani</groupId>
+				<artifactId>xz</artifactId>
+				<version>${tukaani-xz.version}</version>
+			</dependency>
 
-    <!-- META DATA -->
+			<dependency>
+				<groupId>tools.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
 
-    <inceptionYear>Oct 2023</inceptionYear>
-    <scm>
-        <url>https://github.com/javacompute/jcompute</url>
-        <tag>HEAD</tag>
-    </scm>
-    <issueManagement>
-        <system>Github</system>
-        <url>https://github.com/javacompute/jcompute</url>
-    </issueManagement>
-    <ciManagement>
-        <system>CI</system>
-        <url>https://github.com/javacompute/jcompute</url>
-    </ciManagement>
-    <developers>
-        <developer>
-            <id>ahuber</id>
-            <name>Andi Huber</name>
-            <email>ahuber@apache.org</email>
-            <roles>
-                <role>committer</role>
-            </roles>
-            <timezone>+1</timezone>
-        </developer>
-    </developers>
+		</dependencies>
+	</dependencyManagement>
+
+	<modules>
+		<module>parent</module>
+		<module>base</module>
+		<module>opencl</module>
+		<module>combinatorics</module>
+		<module>ai</module>
+		<module>fx</module>
+	</modules>
+
+	<!-- META DATA -->
+
+	<inceptionYear>Oct 2023</inceptionYear>
+	<scm>
+		<url>https://github.com/javacompute/jcompute</url>
+		<tag>HEAD</tag>
+	</scm>
+	<issueManagement>
+		<system>Github</system>
+		<url>https://github.com/javacompute/jcompute</url>
+	</issueManagement>
+	<ciManagement>
+		<system>CI</system>
+		<url>https://github.com/javacompute/jcompute</url>
+	</ciManagement>
+	<developers>
+		<developer>
+			<id>ahuber</id>
+			<name>Andi Huber</name>
+			<email>ahuber@apache.org</email>
+			<roles>
+				<role>committer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
 
 </project>

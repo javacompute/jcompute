@@ -71,7 +71,7 @@ public abstract class ClDevice {
 
     @Override
     public String toString() {
-        return String.format("%s (%s)", getName(), getType().name());
+        return "%s (%s)".formatted(getName(), getType().name());
     }
 
 }

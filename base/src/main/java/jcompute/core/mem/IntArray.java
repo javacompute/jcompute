@@ -29,6 +29,10 @@ import java.util.function.LongToIntFunction;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
+import static java.lang.foreign.ValueLayout.JAVA_INT;
+
+import org.jspecify.annotations.Nullable;
+
 import jcompute.core.io.IntMarshaller;
 import jcompute.core.shape.Shape;
 
@@ -36,7 +40,7 @@ public record IntArray(
         Shape shape,
         MemorySegment memorySegment) implements JComputeArray {
 
-    private final static ValueLayout.OfInt VALUE_LAYOUT = ValueLayout.JAVA_INT;
+    private final static ValueLayout.OfInt VALUE_LAYOUT = JAVA_INT;
 
     public static IntArray of(final Arena arena, final Shape shape) {
         var layout = MemoryLayout.sequenceLayout(shape.totalSize(), VALUE_LAYOUT);
@@ -44,16 +48,21 @@ public record IntArray(
         return new IntArray(shape, memorySegment);
     }
 
-    public static IntArray wrap(final Arena arena, final int[] values) {
-        var array = IntArray.of(arena, Shape.of(values.length));
-        for (int i = 0; i < values.length; i++) {
-            array.memorySegment.setAtIndex(VALUE_LAYOUT, i, values[i]);
-        }
-        return array;
+    public static IntArray wrap(final int ... values) {
+    	return new IntArray(Shape.of(values.length), MemorySegment.ofArray(values));
     }
 
-    public static IntArray wrap(final int[] values) {
-        return wrap(Arena.ofAuto(), values);
+    public static IntArray wrap(final Arena arena, final int... values) {
+        return IntArray.of(arena, Shape.of(values.length))
+        		.copyFrom(values);
+    }
+
+    public IntArray copyFrom(final @Nullable int[] values) {
+    	if(values==null)
+    		return this;
+    	final int size = (int)Math.min(shape.totalSize(), values.length);
+    	MemorySegment.copy(values, 0, memorySegment, VALUE_LAYOUT, 0L, size);
+    	return this;
     }
 
     @Override
@@ -118,7 +127,7 @@ public record IntArray(
     }
 
     public int[] toArray() {
-        return toBuffer().array();
+    	return memorySegment.toArray(VALUE_LAYOUT);
     }
 
     @Override
