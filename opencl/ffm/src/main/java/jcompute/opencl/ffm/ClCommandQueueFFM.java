@@ -39,7 +39,7 @@ import jcompute.opencl.ClMem;
 import jcompute.opencl.ffm._CL.AddressConstant;
 import jcompute.opencl.ffm.gen.opencl_h;
 
-public final class ClCommandQueueFFM extends ClCommandQueue {
+final class ClCommandQueueFFM extends ClCommandQueue {
 
     @Getter @Accessors(fluent = true) private final AddressConstant address;
 

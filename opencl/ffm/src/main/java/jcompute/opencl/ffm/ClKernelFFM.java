@@ -38,7 +38,7 @@ import jcompute.opencl.ClProgram;
 import jcompute.opencl.ffm._CL.AddressConstant;
 import jcompute.opencl.ffm.gen.opencl_h;
 
-public final class ClKernelFFM extends ClKernel {
+final class ClKernelFFM extends ClKernel {
 
     @Getter @Accessors(fluent = true) private final AddressConstant address;
 

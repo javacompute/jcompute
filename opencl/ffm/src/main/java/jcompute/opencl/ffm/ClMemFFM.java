@@ -29,7 +29,7 @@ import jcompute.opencl.ClMem;
 import jcompute.opencl.ffm._CL.AddressConstant;
 import jcompute.opencl.ffm.gen.opencl_h_1;
 
-public final class ClMemFFM extends ClMem {
+final class ClMemFFM extends ClMem {
 
     @Getter @Accessors(fluent = true) private final AddressConstant address;
 

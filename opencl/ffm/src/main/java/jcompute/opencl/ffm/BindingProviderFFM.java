@@ -41,9 +41,14 @@ public class BindingProviderFFM extends OpenCLBindingProviderAbstract {
      */
     private static List<ClPlatform> createPlatforms() {
 
-    	new LibraryLocator().locateOpenCL()
+    	var libPath = new LibraryLocator().locateOpenCL()
 			.map(File::getAbsolutePath)
-			.ifPresent(System::load);
+			.orElse(null);
+
+    	if(libPath==null)
+    		return List.of();
+
+		System.load(libPath);
 
     	try(var ffm = new FFMHelper(Arena.ofConfined())) {
 	        final int maxPlatforms = 16;

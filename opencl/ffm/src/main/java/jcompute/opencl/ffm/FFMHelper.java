@@ -29,7 +29,7 @@ import jcompute.opencl.ffm._CL.AddressArray;
 import jcompute.opencl.ffm._CL.UInt;
 import jcompute.opencl.ffm._CL.ULong;
 
-public record FFMHelper(Arena arena) implements AutoCloseable {
+record FFMHelper(Arena arena) implements AutoCloseable {
 
 	public FFMHelper() {
 		this(Arena.ofConfined());
