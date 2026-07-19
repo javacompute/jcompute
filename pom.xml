@@ -127,6 +127,12 @@ additional
 
 			<dependency>
 				<groupId>io.github.javacompute</groupId>
+				<artifactId>jcompute-opencl-ffm</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.github.javacompute</groupId>
 				<artifactId>jcompute-opencl-bytedeco</artifactId>
 				<version>${project.version}</version>
 			</dependency>
