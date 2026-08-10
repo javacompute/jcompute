@@ -27,6 +27,7 @@ import java.util.stream.LongStream;
 import lombok.SneakyThrows;
 
 import jcompute.core.io.LongMarshaller;
+import jcompute.core.util.function.BiIntConsumer;
 import jcompute.core.util.function.BiLongConsumer;
 import jcompute.core.util.function.TriLongConsumer;
 
@@ -85,6 +86,29 @@ implements Serializable {
         return this;
     }
 
+    public void forEachAsInt(final BiIntConsumer onIndex) {
+    	final int upperI = Math.toIntExact(sizeX);
+        switch (dimensionCount) {
+        case 1: {
+            for(int i = 0; i<upperI; ++i) {
+                onIndex.accept(i, 0);
+            }
+            return;
+        }
+        case 2: {
+        	final int upperJ = Math.toIntExact(sizeY);
+            for(int j = 0; j<upperJ; ++j) {
+            	for(int i = 0; i<upperI; ++i) {
+                    onIndex.accept(i, j);
+                }
+            }
+            return;
+        }
+        default:
+            throw new IllegalArgumentException("Unexpected value: " + dimensionCount);
+        }
+    }
+
     public void forEach(final BiLongConsumer onIndex) {
         switch (dimensionCount) {
         case 1: {
@@ -94,8 +118,8 @@ implements Serializable {
             return;
         }
         case 2: {
-            for(long i = 0L; i<sizeX; ++i) {
-                for(long j = 0L; j<sizeY; ++j) {
+            for(long j = 0L; j<sizeY; ++j) {
+            	for(long i = 0L; i<sizeX; ++i) {
                     onIndex.accept(i, j);
                 }
             }
