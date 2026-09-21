@@ -28,7 +28,7 @@ additional
 
 	<properties>
 		<revision>1.0.0-SNAPSHOT</revision>
-		<maven.compiler.release>26</maven.compiler.release>
+		<maven.compiler.release>27</maven.compiler.release>
 		<maven.compiler.arg>--enable-preview</maven.compiler.arg>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -259,7 +259,7 @@ additional
 
 	<!-- META DATA -->
 
-	<inceptionYear>Oct 2023</inceptionYear>
+	<inceptionYear>2023 (Oct)</inceptionYear>
 	<scm>
 		<url>https://github.com/javacompute/jcompute</url>
 		<tag>HEAD</tag>
