@@ -28,7 +28,7 @@ additional
 
 	<properties>
 		<revision>1.0.0-SNAPSHOT</revision>
-		<maven.compiler.release>27</maven.compiler.release>
+		<maven.compiler.release>28</maven.compiler.release>
 		<maven.compiler.arg>--enable-preview</maven.compiler.arg>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -37,7 +37,7 @@ additional
 		<commons-compress.version>1.28.0</commons-compress.version>
 
 		<jackson.version>3.2.4</jackson.version>
-		<javafx.version>27.0.1</javafx.version>
+		<javafx.version>28-ea+12</javafx.version>
 		<jocl.version>2.0.6</jocl.version>
 		<slf4j-api.version>2.0.20</slf4j-api.version>
 

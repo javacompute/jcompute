@@ -56,19 +56,6 @@ implements DragAndScrollHandler<jcompute.fx.cam.DefaultCameraControl.Snapshot> {
         this(controlableCamera,
                 new Translate(), new Translate(),
                 new SimpleDoubleProperty(0.), new SimpleDoubleProperty(0.));
-    }
-
-    public DefaultCameraControl(
-            final ControlableCamera controlableCamera,
-            final Translate worldPivot,
-            final Translate worldPosition,
-            final DoubleProperty thetaDegree,
-            final DoubleProperty phiDegree) {
-        this.controlableCamera = controlableCamera;
-        this.worldPivot = worldPivot;
-        this.worldPosition = worldPosition;
-        this.thetaDegree = thetaDegree;
-        this.phiDegree = phiDegree;
         bind(controlableCamera.scene());
         controlableCamera.bindPositionTo(worldPosition);
         controlableCamera.bindRotations(thetaDegree, phiDegree);

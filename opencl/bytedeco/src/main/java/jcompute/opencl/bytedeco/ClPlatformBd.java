@@ -21,6 +21,7 @@ package jcompute.opencl.bytedeco;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.bytedeco.javacpp.PointerPointer;
 import org.bytedeco.opencl._cl_device_id;
@@ -41,37 +42,38 @@ record ClPlatformBd(
 		String platformVendor,
 		String platformVersion,
 		String platformExtensions,
-		LazyConstant<List<ClDevice>> devicesLazy) implements ClPlatform {
+		AtomicReference<List<ClDevice>> devicesRef) implements ClPlatform {
 
-	ClPlatformBd(
-			final int index,
-			final _cl_platform_id id,
-			final String platformName,
-			final String platformVendor,
-			final String platformVersion,
-			final String platformExtensions,
-			final LazyConstant<List<ClDevice>> devicesLazy) {
-		this.index = index;
-		this.id = id;
-		this.platformName = platformName!=null
+	ClPlatformBd {
+		platformName = platformName!=null
 				? platformName
 				: getString(id, OpenCL.CL_PLATFORM_NAME);
-		this.platformVendor = platformName!=null
+		platformVendor = platformName!=null
 				? platformVendor
 				: getString(id, OpenCL.CL_PLATFORM_VENDOR);
-		this.platformVersion = platformVersion!=null
+		platformVersion = platformVersion!=null
 				? platformVersion
 				: getString(id, OpenCL.CL_PLATFORM_VERSION);
-		this.platformExtensions = platformExtensions!=null
+		platformExtensions = platformExtensions!=null
 				? platformExtensions
 				: getString(id, OpenCL.CL_PLATFORM_EXTENSIONS);
-		this.devicesLazy = devicesLazy!=null
-				? devicesLazy
-				: LazyConstant.of(()->listDevices(this));
+		devicesRef = devicesRef!=null
+				? devicesRef
+				: new AtomicReference<>();
 	}
 
     ClPlatformBd(final int index, final _cl_platform_id platformId) {
     	this(index, platformId, null, null, null, null, null);
+    }
+
+    @Override public String getPlatformName() { return platformName; }
+    @Override public String getPlatformVendor() { return platformVendor; }
+    @Override public String getPlatformVersion() { return platformVersion; }
+    @Override public String getPlatformExtensions() { return platformExtensions; }
+
+    @Override
+    public List<ClDevice> getDevices() {
+        return devicesRef.updateAndGet(old->old != null ? old : listDevices(this));
     }
 
     // -- HELPER
@@ -100,13 +102,4 @@ record ClPlatformBd(
         }
     }
 
-	@Override public String getPlatformName() { return platformName; }
-	@Override public String getPlatformVendor() { return platformVendor; }
-	@Override public String getPlatformVersion() { return platformVersion; }
-	@Override public String getPlatformExtensions() { return platformExtensions; }
-
-	@Override
-	public List<ClDevice> getDevices() {
-		return devicesLazy.get();
-	}
 }

@@ -22,6 +22,7 @@ import java.lang.foreign.MemorySegment;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import jcompute.opencl.ClDevice;
 import jcompute.opencl.ClPlatform;
@@ -36,33 +37,24 @@ record ClPlatformFFM(
 		String platformVendor,
 		String platformVersion,
 		String platformExtensions,
-		LazyConstant<List<ClDevice>> devicesLazy) implements ClPlatform {
+		AtomicReference<List<ClDevice>> devicesRef) implements ClPlatform {
 
-	ClPlatformFFM(
-			final int index,
-			final AddressConstant address,
-			final String platformName,
-			final String platformVendor,
-			final String platformVersion,
-			final String platformExtensions,
-			final LazyConstant<List<ClDevice>> devicesLazy) {
-		this.index = index;
-		this.address = address;
-		this.platformName = platformName!=null
+	ClPlatformFFM {
+		platformName = platformName!=null
 				? platformName
-				: getString(opencl_h_1.CL_PLATFORM_NAME());
-		this.platformVendor = platformName!=null
+				: getString(address, opencl_h_1.CL_PLATFORM_NAME());
+		platformVendor = platformName!=null
 				? platformVendor
-				: getString(opencl_h_1.CL_PLATFORM_VENDOR());
-		this.platformVersion = platformVersion!=null
+				: getString(address, opencl_h_1.CL_PLATFORM_VENDOR());
+		platformVersion = platformVersion!=null
 				? platformVersion
-				: getString(opencl_h_1.CL_PLATFORM_VERSION());
-		this.platformExtensions = platformExtensions!=null
+				: getString(address, opencl_h_1.CL_PLATFORM_VERSION());
+		platformExtensions = platformExtensions!=null
 				? platformExtensions
-				: getString(opencl_h_1.CL_PLATFORM_EXTENSIONS());
-		this.devicesLazy = devicesLazy!=null
-				? devicesLazy
-				: LazyConstant.of(()->listDevices(this));
+				: getString(address, opencl_h_1.CL_PLATFORM_EXTENSIONS());
+		devicesRef = devicesRef!=null
+				? devicesRef
+				: new AtomicReference<>();
 	}
 
     ClPlatformFFM(final int index, final AddressConstant platformId) {
@@ -71,9 +63,19 @@ record ClPlatformFFM(
 
     MemorySegment id() { return address.memorySegment(); }
 
+    @Override public String getPlatformName() { return platformName; }
+    @Override public String getPlatformVendor() { return platformVendor; }
+    @Override public String getPlatformVersion() { return platformVersion; }
+    @Override public String getPlatformExtensions() { return platformExtensions; }
+
+    @Override
+    public List<ClDevice> getDevices() {
+        return devicesRef.updateAndGet(old->old != null ? old : listDevices(this));
+    }
+
     // -- HELPER
 
-    private String getString(final int paramName) {
+    private static String getString(final AddressConstant address, final int paramName) {
     	try(var ffm = new FFMHelper()) {
     		return ffm.readString((a, b, c)->opencl_h_1.clGetPlatformInfo(address.memorySegment(), paramName, a, b, c));
     	}
@@ -107,13 +109,4 @@ record ClPlatformFFM(
     	}
     }
 
-	@Override public String getPlatformName() { return platformName; }
-	@Override public String getPlatformVendor() { return platformVendor; }
-	@Override public String getPlatformVersion() { return platformVersion; }
-	@Override public String getPlatformExtensions() { return platformExtensions; }
-
-	@Override
-	public List<ClDevice> getDevices() {
-		return devicesLazy.get();
-	}
 }

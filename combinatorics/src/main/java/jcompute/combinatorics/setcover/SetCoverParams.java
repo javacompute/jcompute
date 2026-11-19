@@ -31,7 +31,7 @@ public record SetCoverParams(
         LongArray kSets,
         LongArray pSets) {
 
-    SetCoverParams(
+    public SetCoverParams(
             final Arena arena,
             final int v,
             final int m,
