@@ -18,14 +18,14 @@
  */
 package jcompute.core.shape;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.function.LongConsumer;
 import java.util.stream.LongStream;
 
-import lombok.SneakyThrows;
-
+import jcompute.core.exception.JComputeException;
 import jcompute.core.io.LongMarshaller;
 import jcompute.core.util.function.BiIntConsumer;
 import jcompute.core.util.function.BiLongConsumer;
@@ -177,41 +177,44 @@ implements Serializable {
 
     // -- IO
 
-    @SneakyThrows
     public void write(final OutputStream out) {
-        out.write(dimensionCount);
-        if(dimensionCount==0) return;
-        var marshaller = new LongMarshaller(1);
-        marshaller.write(sizeX, out);
-        if(dimensionCount>1) {
-            marshaller.write(sizeY, out);
-        }
-        if(dimensionCount>2) {
-            marshaller.write(sizeZ, out);
+        try {
+            out.write(dimensionCount);
+            if(dimensionCount==0) return;
+            var marshaller = new LongMarshaller(1);
+            marshaller.write(sizeX, out);
+            if(dimensionCount>1) {
+                marshaller.write(sizeY, out);
+            }
+            if(dimensionCount>2) {
+                marshaller.write(sizeZ, out);
+            }
+        } catch (IOException e) {
+            throw JComputeException.wrap(e);
         }
     }
 
-    @SneakyThrows
     public static Shape read(final InputStream in) {
-        final int dimensionCount = in.read();
-        if(dimensionCount==0) return empty();
-        var marshaller = new LongMarshaller(1);
-        if(dimensionCount==1) {
-            return Shape.of(
-                    marshaller.read(in));
+        try {
+            final int dimensionCount = in.read();
+            if(dimensionCount==0) return empty();
+            var marshaller = new LongMarshaller(1);
+            if(dimensionCount==1)
+                return Shape.of(
+                        marshaller.read(in));
+            if(dimensionCount==2)
+                return Shape.of(
+                        marshaller.read(in),
+                        marshaller.read(in));
+            if(dimensionCount==3)
+                return Shape.of(
+                        marshaller.read(in),
+                        marshaller.read(in),
+                        marshaller.read(in));
+            throw new IllegalArgumentException("Unexpected value: " + dimensionCount);
+        } catch (IOException e) {
+            throw JComputeException.wrap(e);
         }
-        if(dimensionCount==2) {
-            return Shape.of(
-                    marshaller.read(in),
-                    marshaller.read(in));
-        }
-        if(dimensionCount==3) {
-            return Shape.of(
-                    marshaller.read(in),
-                    marshaller.read(in),
-                    marshaller.read(in));
-        }
-        throw new IllegalArgumentException("Unexpected value: " + dimensionCount);
     }
 
 }

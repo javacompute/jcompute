@@ -18,6 +18,7 @@
  */
 package jcompute.core.util.primitive;
 
+import java.io.IOException;
 import java.util.function.IntSupplier;
 import java.util.stream.IntStream;
 
@@ -28,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import lombok.SneakyThrows;
 import lombok.experimental.ExtensionMethod;
 
 import jcompute.core.io.IntMarshaller;
@@ -36,9 +36,8 @@ import jcompute.core.io.IntMarshaller;
 @ExtensionMethod(IntUtils.class)
 class IntUtilsTest {
 
-    @SneakyThrows
     @Test
-    void packing() {
+    void packing() throws IOException {
         var marshaller = new IntMarshaller(1);
 
         for(int v : IntUtils.samples()) {

@@ -18,20 +18,19 @@
  */
 package jcompute.core.util.primitive;
 
+import java.io.IOException;
+
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import lombok.SneakyThrows;
-
 import jcompute.core.io.LongMarshaller;
 
 class LongUtilsTest {
 
-    @SneakyThrows
     @Test
-    void packing() {
+    void packing() throws IOException {
         var marshaller = new LongMarshaller(1);
 
         for(long v : LongUtils.samples()) {

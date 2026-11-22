@@ -21,23 +21,26 @@ package jcompute.core;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import lombok.SneakyThrows;
-
+import jcompute.core.exception.JComputeException;
 import jcompute.core.util.function.throwing.ThrowingConsumer;
 import jcompute.core.util.function.throwing.ThrowingFunction;
 
 public class TempFileProvider implements AutoCloseable, Supplier<File> {
 
-    private File tempFile;
+    private final File tempFile;
 
-    @SneakyThrows
     public TempFileProvider(final Class<?> caller) {
-        this.tempFile = File.createTempFile(caller.getName(), UUID.randomUUID().toString());
+        try {
+            this.tempFile = File.createTempFile(caller.getName(), UUID.randomUUID().toString());
+        } catch (IOException e) {
+            throw JComputeException.wrap(e);
+        }
     }
 
     @Override
@@ -45,17 +48,19 @@ public class TempFileProvider implements AutoCloseable, Supplier<File> {
         return tempFile;
     }
 
-    @SneakyThrows
     public void write(final ThrowingConsumer<OutputStream> outputStreamConsumer) {
         try(final OutputStream fos = new FileOutputStream(tempFile)) {
             outputStreamConsumer.accept(fos);
+        } catch (Throwable e) {
+            throw JComputeException.wrap(e);
         }
     }
 
-    @SneakyThrows
     public <R> R read(final ThrowingFunction<InputStream, R> inputStreamReader) {
         try(final InputStream fis = new FileInputStream(tempFile)) {
             return inputStreamReader.apply(fis);
+        } catch (IOException e) {
+            throw JComputeException.wrap(e);
         }
     }
 

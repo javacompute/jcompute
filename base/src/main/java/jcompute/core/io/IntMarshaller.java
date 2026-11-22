@@ -24,8 +24,7 @@ import java.io.OutputStream;
 import java.lang.foreign.MemorySegment;
 import java.nio.IntBuffer;
 
-import lombok.SneakyThrows;
-
+import jcompute.core.exception.JComputeException;
 import jcompute.core.util.primitive.IntUtils;
 
 public record IntMarshaller(
@@ -47,59 +46,67 @@ public record IntMarshaller(
         this(bufferSize, new int[bufferSize], new byte[Integer.BYTES * bufferSize]);
     }
 
-    @SneakyThrows
     public void write(final int value, final OutputStream out) {
         toBytes(value, byteArray);
-        out.write(byteArray, 0, Integer.BYTES);
+        try {
+            out.write(byteArray, 0, Integer.BYTES);
+        } catch (IOException e) {
+            throw JComputeException.wrap(e);
+        }
     }
 
-    @SneakyThrows
     public int read(final InputStream in) {
-        in.read(byteArray, 0, Integer.BYTES);
-        return fromBytes(byteArray);
+        try {
+            in.read(byteArray, 0, Integer.BYTES);
+            return fromBytes(byteArray);
+        } catch (IOException e) {
+            throw JComputeException.wrap(e);
+        }
     }
 
-    @SneakyThrows
     public void transfer(final long size, final IntBulkConsumer in, final IntBulkConsumer out) {
         long remainingLongs = size;
-        while(remainingLongs>0) {
-            int blockSize = (int)Math.min(remainingLongs, bufferSize);
-            in.accept(intArray, 0, blockSize);
-            out.accept(intArray, 0, blockSize);
-            remainingLongs-=blockSize;
+        try {
+            while(remainingLongs>0) {
+                int blockSize = (int)Math.min(remainingLongs, bufferSize);
+                in.accept(intArray, 0, blockSize);
+                out.accept(intArray, 0, blockSize);
+                remainingLongs-=blockSize;
+            }
+        } catch (Throwable e) {
+            throw JComputeException.wrap(e);
         }
     }
 
     @SuppressWarnings("unused")
-    @SneakyThrows
     public void transfer(final long size, final InputStream in, final IntBulkConsumer out) {
-        transfer(size, (int[] values, int offset, int length)->{
+        transfer(size, (final int[] values, final int offset, final int length)->{
             int bytesToRead = length * Integer.BYTES;
             int bytesRead = in.read(byteArray, 0, bytesToRead);
-            if(bytesRead<bytesToRead) {
+            if(bytesRead<bytesToRead)
                 throw new IOException("could not read all bytes of a single block");
-            }
             fromBytes(length, byteArray, intArray);
         }, out);
     }
 
     @SuppressWarnings("unused")
-    @SneakyThrows
     public void transfer(final long size, final IntBulkConsumer in, final OutputStream out) {
-        transfer(size, in, (int[] values, int offset, int length)->{
+        transfer(size, in, (final int[] values, final int offset, final int length)->{
             toBytes(length, values, byteArray);
             out.write(byteArray, 0, length * Integer.BYTES);
         });
     }
 
-    @SneakyThrows
     public void writeBuffer(final IntBuffer buffer, final OutputStream out) {
         buffer.rewind();
         transfer(buffer.capacity(), buffer::get, out);
-        out.close();
+        try {
+            out.close();
+        } catch (IOException e) {
+            throw JComputeException.wrap(e);
+        }
     }
 
-    @SneakyThrows
     public IntBuffer readBuffer(final int size, final InputStream in) {
         var buffer = IntBuffer.allocate(size);
         transfer(size, in, buffer::put);

@@ -20,14 +20,13 @@ package jcompute.core.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.IntBuffer;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import lombok.SneakyThrows;
 
 import jcompute.core.util.primitive.IntUtils;
 
@@ -42,9 +41,8 @@ class IntMarshallerTest {
         }
     }
 
-    @SneakyThrows
     @Test
-    void bulk() {
+    void bulk() throws IOException {
         var samples = IntUtils.samples();
         var marshaller = new IntMarshaller();
 

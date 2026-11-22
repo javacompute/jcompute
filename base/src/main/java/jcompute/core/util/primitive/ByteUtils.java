@@ -26,36 +26,39 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+
+import jcompute.core.exception.JComputeException;
 
 @UtilityClass
 public class ByteUtils {
 
-    @SneakyThrows
     public void writeToBuffer(final ByteBuffer buffer, final OutputStream out) {
         final int size = buffer.capacity();
         try(WritableByteChannel channel = Channels.newChannel(out)){
             buffer.rewind();
             int count = channel.write(buffer);
-            if(count!=size) {
+            if(count!=size)
                 throw new IOException(String.format("Could only write %d of %d bytes.", count, size));
-            }
+        } catch (IOException e) {
+            throw JComputeException.wrap(e);
         }
     }
 
-    @SneakyThrows
     public void readIntoBuffer(final long size, final InputStream in, final ByteBuffer byteBuffer) {
         try(ReadableByteChannel channel = Channels.newChannel(in)) {
             long count = 0;
             while(count<size) {
                 int read = channel.read(byteBuffer);
-                if(read==-1) break;
+                if(read==-1) {
+                    break;
+                }
                 count+= read;
             }
-            if(count!=size) {
+            if(count!=size)
                 throw new IOException(String.format("Could only read %d of %d bytes.", count, size));
-            }
+        } catch (IOException e) {
+            throw JComputeException.wrap(e);
         }
     }
 

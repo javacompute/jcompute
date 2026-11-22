@@ -18,6 +18,7 @@
  */
 package jcompute.opencl;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Stack;
@@ -25,9 +26,9 @@ import java.util.Stack;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 
+import jcompute.core.exception.JComputeException;
 import jcompute.core.mem.JComputeArray;
 import jcompute.opencl.ClMem.MemMode;
 
@@ -36,7 +37,7 @@ public abstract class ClContext implements AutoCloseable {
 
     //public abstract cl_context id();
     @Getter @Accessors(fluent = true) private final List<ClDevice> devices;
-    private final Stack<ClResource> childResources = new Stack<ClResource>();
+    private final Stack<ClResource> childResources = new Stack<>();
 
     protected abstract ClCommandQueue createQueueInternal();
     protected abstract ClProgram createProgramInternal(String programSource);
@@ -88,11 +89,12 @@ public abstract class ClContext implements AutoCloseable {
 
     // -- UTILITY
 
-    @SneakyThrows
     public final ClProgram createProgram(final Class<?> cls, final String resourceName) {
-        try(var is = cls.getResourceAsStream(resourceName)){
+        try(var is = cls.getResourceAsStream(resourceName)) {
             var source = _Util.read(is, StandardCharsets.UTF_8);
             return createProgram(source);
+        } catch (IOException e) {
+            throw JComputeException.wrap(e);
         }
     }
 

@@ -24,8 +24,7 @@ import java.io.OutputStream;
 import java.lang.foreign.MemorySegment;
 import java.nio.LongBuffer;
 
-import lombok.SneakyThrows;
-
+import jcompute.core.exception.JComputeException;
 import jcompute.core.util.primitive.IntUtils;
 
 public record LongMarshaller(
@@ -47,59 +46,67 @@ public record LongMarshaller(
         this(bufferSize, new long[bufferSize], new byte[Long.BYTES * bufferSize]);
     }
 
-    @SneakyThrows
     public void write(final long value, final OutputStream out) {
-        toBytes(value, byteArray);
-        out.write(byteArray, 0, Long.BYTES);
+        try {
+            toBytes(value, byteArray);
+            out.write(byteArray, 0, Long.BYTES);
+        } catch (IOException e) {
+            throw JComputeException.wrap(e);
+        }
     }
 
-    @SneakyThrows
     public long read(final InputStream in) {
-        in.read(byteArray, 0, Long.BYTES);
-        return fromBytes(byteArray);
+        try {
+            in.read(byteArray, 0, Long.BYTES);
+            return fromBytes(byteArray);
+        } catch (IOException e) {
+            throw JComputeException.wrap(e);
+        }
     }
 
-    @SneakyThrows
     public void transfer(final long size, final LongBulkConsumer in, final LongBulkConsumer out) {
         long remainingLongs = size;
-        while(remainingLongs>0) {
-            int blockSize = (int)Math.min(remainingLongs, bufferSize);
-            in.accept(longArray, 0, blockSize);
-            out.accept(longArray, 0, blockSize);
-            remainingLongs-=blockSize;
+        try {
+            while(remainingLongs>0) {
+                int blockSize = (int)Math.min(remainingLongs, bufferSize);
+                in.accept(longArray, 0, blockSize);
+                out.accept(longArray, 0, blockSize);
+                remainingLongs-=blockSize;
+            }
+        } catch (Throwable e) {
+            throw JComputeException.wrap(e);
         }
     }
 
     @SuppressWarnings("unused")
-    @SneakyThrows
     public void transfer(final long size, final InputStream in, final LongBulkConsumer out) {
-        transfer(size, (long[] values, int offset, int length)->{
+        transfer(size, (final long[] values, final int offset, final int length)->{
             int bytesToRead = length * Long.BYTES;
             int bytesRead = in.read(byteArray, 0, bytesToRead);
-            if(bytesRead<bytesToRead) {
+            if(bytesRead<bytesToRead)
                 throw new IOException("could not read all bytes of a single block");
-            }
             fromBytes(length, byteArray, longArray);
         }, out);
     }
 
     @SuppressWarnings("unused")
-    @SneakyThrows
     public void transfer(final long size, final LongBulkConsumer in, final OutputStream out) {
-        transfer(size, in, (long[] values, int offset, int length)->{
+        transfer(size, in, (final long[] values, final int offset, final int length)->{
             toBytes(length, values, byteArray);
             out.write(byteArray, 0, length * Long.BYTES);
         });
     }
 
-    @SneakyThrows
     public void writeBuffer(final LongBuffer buffer, final OutputStream out) {
         buffer.rewind();
         transfer(buffer.capacity(), buffer::get, out);
-        out.close();
+        try {
+            out.close();
+        } catch (IOException e) {
+            throw JComputeException.wrap(e);
+        }
     }
 
-    @SneakyThrows
     public LongBuffer readBuffer(final int size, final InputStream in) {
         var buffer = LongBuffer.allocate(size);
         transfer(size, in, buffer::put);

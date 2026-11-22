@@ -21,10 +21,10 @@ package jcompute.core.io;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 
-import lombok.SneakyThrows;
+import jcompute.core.exception.JComputeException;
 
 public interface Compressor {
 
@@ -62,17 +62,23 @@ public interface Compressor {
 
     static Compressor forName(final String compressorName) {
         return new Compressor() {
-            @Override @SneakyThrows
+            @Override
             public OutputStream out(final OutputStream os) {
-                var compressedOut = new CompressorStreamFactory()
-                        .createCompressorOutputStream(compressorName, os);
-                return compressedOut;
+                try {
+                    return new CompressorStreamFactory()
+                            .createCompressorOutputStream(compressorName, os);
+                } catch (CompressorException e) {
+                    throw JComputeException.wrap(e);
+                }
             }
-            @Override @SneakyThrows
+            @Override
             public InputStream in(final InputStream in) {
-                CompressorInputStream decompressedIn = new CompressorStreamFactory()
-                        .createCompressorInputStream(compressorName, in);
-                return decompressedIn;
+                try {
+                    return new CompressorStreamFactory()
+                            .createCompressorInputStream(compressorName, in);
+                } catch (CompressorException e) {
+                    throw JComputeException.wrap(e);
+                }
             }
         };
     }

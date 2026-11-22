@@ -20,14 +20,13 @@ package jcompute.core.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.LongBuffer;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import lombok.SneakyThrows;
 
 import jcompute.core.util.primitive.LongUtils;
 
@@ -42,9 +41,8 @@ class LongMarshallerTest {
         }
     }
 
-    @SneakyThrows
     @Test
-    void bulk() {
+    void bulk() throws IOException {
         var samples = LongUtils.samples();
         var marshaller = new LongMarshaller();
 
@@ -59,7 +57,6 @@ class LongMarshallerTest {
                         .array();
 
                 Assertions.assertArrayEquals(samples, recoveredAray);
-
             }
         }
     }

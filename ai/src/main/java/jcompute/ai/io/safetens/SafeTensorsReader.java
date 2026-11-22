@@ -18,16 +18,15 @@
  */
 package jcompute.ai.io.safetens;
 
+import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 
-import lombok.SneakyThrows;
-
+import jcompute.core.exception.JComputeException;
 import jcompute.core.io.FileChannelReader;
 
 public record SafeTensorsReader(Path modelPath) {
 
-    @SneakyThrows
     public void dumpInfo() {
         try (var fileChannel = FileChannel.open(modelPath)) {
             var reader = new FileChannelReader(fileChannel);
@@ -42,6 +41,8 @@ public record SafeTensorsReader(Path modelPath) {
 //                //TODO each tensor could be mapped to memory segment
 //            }
 
+        } catch (IOException e) {
+            throw JComputeException.wrap(e);
         }
 
     }

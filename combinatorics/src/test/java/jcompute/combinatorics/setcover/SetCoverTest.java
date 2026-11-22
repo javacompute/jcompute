@@ -18,6 +18,7 @@
  */
 package jcompute.combinatorics.setcover;
 
+import java.io.IOException;
 import java.lang.foreign.Arena;
 
 import org.junit.jupiter.api.Disabled;
@@ -26,8 +27,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import lombok.SneakyThrows;
-
+import jcompute.core.exception.JComputeException;
 import jcompute.core.io.Compressor;
 import jcompute.core.mem.ByteArray;
 import jcompute.core.mem.LongArray;
@@ -88,7 +88,6 @@ class SetCoverTest {
 
     // -- HELPER
 
-    @SneakyThrows
     private void setup(final Arena arena) {
         var stopWatch = Timing.now();
 
@@ -96,6 +95,8 @@ class SetCoverTest {
             var kSets = LongArray.read(arena, Compressor.lzma().in(fis));
             assertNotNull(kSets);
             this.setCoverParams = new SetCoverParams(arena, 35, 7, 6, kSets);
+        } catch (IOException e) {
+            throw JComputeException.wrap(e);
         }
 
         this.outputMem = ByteArray.of(arena, setCoverParams.shape());
