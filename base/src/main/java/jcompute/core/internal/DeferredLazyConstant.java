@@ -22,28 +22,51 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
-/**
- * As of JEP 401, {@code this} cannot escape a record constructor context unless the record is fully initialized.
- *
- * <p>This utility helps to create a LazyConstant that binds an argument for the computing function later (deferred).
- */
+/// As of JEP 401, {@code this} cannot escape a record constructor context unless the record is fully initialized.
+///
+/// This utility helps to create a LazyConstant that binds an argument for the computing function later (deferred).
+///
+/// Be aware, the {@link LazyConstant} instance as returned from {@link DeferredLazyConstant#constant()}
+/// will throw a {@link NullPointerException} when its {@code get()} member is called,
+/// if there was no prior binding via {@link DeferredLazyConstant#bind(Object)}.
+///
+/// In other words: <em>don't forget to bind!</em>
+///
+/// Example Usage (inside a record constructor):
+///  ```java
+///   var listDevices = new DeferredLazyConstant<>(ClPlatformFFM::listDevices);
+///   this(index, platformId, null, null, null, null, listDevices.constant());
+///   listDevices.bind(this);
+/// ```
+@SuppressWarnings("preview")
 public final class DeferredLazyConstant<T, R> {
 
     private final Function<T, R> computingFunction;
-    private final AtomicReference<T> intanceRef;
+    private final AtomicReference<T> instanceRef;
 
     public DeferredLazyConstant(final Function<T, R> computingFunction) {
-        this.intanceRef = new AtomicReference<>();
+        this.instanceRef = new AtomicReference<>();
         this.computingFunction = Objects.requireNonNull(computingFunction);
     }
 
-    @SuppressWarnings("preview")
+    /**
+     * Returns a new {@link LazyConstant} instance, that will compute its constant value based on
+     * on this instance's {@code computingFunction} and an argument that must be bound exactly once.
+     */
     public LazyConstant<R> constant() {
-        return LazyConstant.of(()->computingFunction.apply(Objects.requireNonNull(intanceRef.get())));
+        return LazyConstant.of(()->computingFunction.apply(
+                Objects.requireNonNull(instanceRef.get(), ()->
+                        "LazyConstant calculated before the argument of the computingFunction was bound. "
+                        + "Perhaps you missed to call DeferredLazyConstant#bind(T)")));
     }
 
+    /**
+     * Sets the argument for this instance's {@code computingFunction}. This binding is allowed exactly once and
+     * must happen exactly once, before any created {@link LazyConstant}(s) can be used.
+     */
     public void bind(final T instance) {
-        intanceRef.set(instance);
+        if (!instanceRef.compareAndSet(null, instance))
+            throw new IllegalStateException("already bound");
     }
 }
 
