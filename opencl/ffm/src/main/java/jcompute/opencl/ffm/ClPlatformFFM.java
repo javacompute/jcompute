@@ -22,8 +22,9 @@ import java.lang.foreign.MemorySegment;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Objects;
 
+import jcompute.core.internal.DeferredLazyConstant;
 import jcompute.opencl.ClDevice;
 import jcompute.opencl.ClPlatform;
 import jcompute.opencl.ffm._CL.AddressConstant;
@@ -37,7 +38,7 @@ record ClPlatformFFM(
 		String platformVendor,
 		String platformVersion,
 		String platformExtensions,
-		AtomicReference<List<ClDevice>> devicesRef) implements ClPlatform {
+		LazyConstant<List<ClDevice>> devicesLazy) implements ClPlatform {
 
 	ClPlatformFFM {
 		platformName = platformName!=null
@@ -52,13 +53,13 @@ record ClPlatformFFM(
 		platformExtensions = platformExtensions!=null
 				? platformExtensions
 				: getString(address, opencl_h_1.CL_PLATFORM_EXTENSIONS());
-		devicesRef = devicesRef!=null
-				? devicesRef
-				: new AtomicReference<>();
+		devicesLazy = Objects.requireNonNull(devicesLazy);
 	}
 
     ClPlatformFFM(final int index, final AddressConstant platformId) {
-    	this(index, platformId, null, null, null, null, null);
+        var listDevices = new DeferredLazyConstant<>(ClPlatformFFM::listDevices);
+    	this(index, platformId, null, null, null, null, listDevices.constant());
+    	listDevices.bind(this);
     }
 
     MemorySegment id() { return address.memorySegment(); }
@@ -70,7 +71,7 @@ record ClPlatformFFM(
 
     @Override
     public List<ClDevice> getDevices() {
-        return devicesRef.updateAndGet(old->old != null ? old : listDevices(this));
+        return devicesLazy.get();
     }
 
     // -- HELPER
@@ -82,7 +83,7 @@ record ClPlatformFFM(
     }
 
     private static List<ClDevice> listDevices(final ClPlatformFFM platform) {
-
+        Objects.requireNonNull(platform);
     	try(var ffm = new FFMHelper()) {
 
     		int maxDevices = 32;

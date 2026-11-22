@@ -21,7 +21,7 @@ package jcompute.opencl.bytedeco;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Objects;
 
 import org.bytedeco.javacpp.PointerPointer;
 import org.bytedeco.opencl._cl_device_id;
@@ -32,6 +32,7 @@ import static org.bytedeco.opencl.global.OpenCL.CL_DEVICE_TYPE_ALL;
 import static org.bytedeco.opencl.global.OpenCL.clGetDeviceIDs;
 import static org.bytedeco.opencl.global.OpenCL.clGetPlatformInfo;
 
+import jcompute.core.internal.DeferredLazyConstant;
 import jcompute.opencl.ClDevice;
 import jcompute.opencl.ClPlatform;
 
@@ -42,7 +43,7 @@ record ClPlatformBd(
 		String platformVendor,
 		String platformVersion,
 		String platformExtensions,
-		AtomicReference<List<ClDevice>> devicesRef) implements ClPlatform {
+		LazyConstant<List<ClDevice>> devicesLazy) implements ClPlatform {
 
 	ClPlatformBd {
 		platformName = platformName!=null
@@ -57,13 +58,13 @@ record ClPlatformBd(
 		platformExtensions = platformExtensions!=null
 				? platformExtensions
 				: getString(id, OpenCL.CL_PLATFORM_EXTENSIONS);
-		devicesRef = devicesRef!=null
-				? devicesRef
-				: new AtomicReference<>();
+		devicesLazy = Objects.requireNonNull(devicesLazy);
 	}
 
     ClPlatformBd(final int index, final _cl_platform_id platformId) {
-    	this(index, platformId, null, null, null, null, null);
+    	var listDevicesLazy = new DeferredLazyConstant<>(ClPlatformBd::listDevices);
+        this(index, platformId, null, null, null, null, listDevicesLazy.constant());
+        listDevicesLazy.bind(this);
     }
 
     @Override public String getPlatformName() { return platformName; }
@@ -73,7 +74,7 @@ record ClPlatformBd(
 
     @Override
     public List<ClDevice> getDevices() {
-        return devicesRef.updateAndGet(old->old != null ? old : listDevices(this));
+        return devicesLazy.get();
     }
 
     // -- HELPER

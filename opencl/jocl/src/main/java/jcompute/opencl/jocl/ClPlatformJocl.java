@@ -21,7 +21,7 @@ package jcompute.opencl.jocl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Objects;
 
 import org.jocl.CL;
 import org.jocl.cl_device_id;
@@ -30,6 +30,7 @@ import org.jocl.cl_platform_id;
 import static org.jocl.CL.clGetDeviceIDs;
 import static org.jocl.CL.clGetPlatformInfo;
 
+import jcompute.core.internal.DeferredLazyConstant;
 import jcompute.opencl.ClDevice;
 import jcompute.opencl.ClPlatform;
 
@@ -40,7 +41,7 @@ record ClPlatformJocl(
 		String platformVendor,
 		String platformVersion,
 		String platformExtensions,
-		AtomicReference<List<ClDevice>> devicesRef
+		LazyConstant<List<ClDevice>> devicesLazy
 		) implements ClPlatform {
 
     ClPlatformJocl {
@@ -56,13 +57,13 @@ record ClPlatformJocl(
 		platformExtensions = platformExtensions!=null
 				? platformExtensions
 				: getString(id, CL.CL_PLATFORM_EXTENSIONS);
-		devicesRef = devicesRef!=null
-				? devicesRef
-				: new AtomicReference<>();
+		devicesLazy = Objects.requireNonNull(devicesLazy);
 	}
 
     ClPlatformJocl(final int index, final cl_platform_id platformId) {
-    	this(index, platformId, null, null, null, null, null);
+        var listDevicesLazy = new DeferredLazyConstant<>(ClPlatformJocl::listDevices);
+        this(index, platformId, null, null, null, null, listDevicesLazy.constant());
+        listDevicesLazy.bind(this);
     }
 
     @Override public String getPlatformName() { return platformName; }
@@ -72,7 +73,7 @@ record ClPlatformJocl(
 
 	@Override
 	public List<ClDevice> getDevices() {
-	    return devicesRef.updateAndGet(old->old != null ? old : listDevices(this));
+	    return devicesLazy.get();
 	}
 
     // -- HELPER
