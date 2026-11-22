@@ -22,7 +22,8 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
-/// As of JEP 401, {@code this} cannot escape a record constructor context unless the record is fully initialized.
+/// As of JEP 401, {@code this} cannot escape a record constructor context
+/// unless the record's components are fully initialized.
 ///
 /// This utility helps to create a LazyConstant that binds an argument for the computing function later (deferred).
 ///
@@ -34,9 +35,9 @@ import java.util.function.Function;
 ///
 /// Example Usage (inside a record constructor):
 ///  ```java
-///   var listDevices = new DeferredLazyConstant<>(ClPlatformFFM::listDevices);
-///   this(index, platformId, null, null, null, null, listDevices.constant());
-///   listDevices.bind(this);
+///   var deferredConst = new DeferredLazyConstant<>(SampleRecord::listChildren);
+///   this(deferredConst.constant());
+///   deferredConst.bind(this);
 /// ```
 @SuppressWarnings("preview")
 public final class DeferredLazyConstant<T, R> {
@@ -51,7 +52,7 @@ public final class DeferredLazyConstant<T, R> {
 
     /**
      * Returns a new {@link LazyConstant} instance, that will compute its constant value based on
-     * on this instance's {@code computingFunction} and an argument that must be bound exactly once.
+     * this instance's {@code computingFunction} and an argument that must be bound exactly once.
      */
     public LazyConstant<R> constant() {
         return LazyConstant.of(()->computingFunction.apply(
@@ -65,7 +66,7 @@ public final class DeferredLazyConstant<T, R> {
      * must happen exactly once, before any created {@link LazyConstant}(s) can be used.
      */
     public void bind(final T instance) {
-        if (!instanceRef.compareAndSet(null, instance))
+        if (!instanceRef.compareAndSet(null, Objects.requireNonNull(instance)))
             throw new IllegalStateException("already bound");
     }
 }
