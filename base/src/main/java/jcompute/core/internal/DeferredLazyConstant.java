@@ -51,19 +51,20 @@ public final class DeferredLazyConstant<T, R> {
     }
 
     /**
-     * Returns a new {@link LazyConstant} instance, that will compute its constant value based on
+     * Each invocation returns a new {@link LazyConstant} instance, that will compute its constant value based on
      * this instance's {@code computingFunction} and an argument that must be bound exactly once.
      */
     public LazyConstant<R> constant() {
         return LazyConstant.of(()->computingFunction.apply(
                 Objects.requireNonNull(instanceRef.get(), ()->
-                        "LazyConstant calculated before the argument of the computingFunction was bound. "
-                        + "Perhaps you missed to call DeferredLazyConstant#bind(T)")));
+                        "LazyConstant computed before the argument of the computingFunction was bound. "
+                        + "Perhaps you forgot to call DeferredLazyConstant#bind(T)")));
     }
 
     /**
-     * Sets the argument for this instance's {@code computingFunction}. This binding is allowed exactly once and
-     * must happen exactly once, before any created {@link LazyConstant}(s) can be used.
+     * Binds the argument. Must be called exactly once, before {@code get()} on any constant from {@link #constant()}.
+     * @throws IllegalStateException if already bound
+     * @throws NullPointerException if instance is {@code null}
      */
     public void bind(final T instance) {
         if (!instanceRef.compareAndSet(null, Objects.requireNonNull(instance)))
