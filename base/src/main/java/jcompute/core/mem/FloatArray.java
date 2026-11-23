@@ -56,7 +56,12 @@ public record FloatArray(
 
     public static FloatArray wrap(final Arena arena, final float... values) {
         return FloatArray.of(arena, Shape.of(values.length))
-        		.copyFrom(values);
+    		.copyFrom(values);
+    }
+
+    public static FloatArray wrap2D(final Arena arena, final float[][] values) {
+        return FloatArray.of(arena, Shape.of(values.length, values[0].length))
+            .copyFrom(values);
     }
 
     public FloatArray copyFrom(final @Nullable float[] values) {
@@ -65,6 +70,27 @@ public record FloatArray(
     	final int size = (int)Math.min(shape.totalSize(), values.length);
     	MemorySegment.copy(values, 0, memorySegment, VALUE_LAYOUT, 0L, size);
     	return this;
+    }
+
+    /**
+     * Flattens values into 1D then sequentially imports. Shapes don't require to match.
+     */
+    public FloatArray copyFrom(final @Nullable float[][] values) {
+        if(values==null)
+            return this;
+        var shapeIn = Shape.of(values.length, values[0].length);
+        long capacity = shape.totalSize();
+        final int importSizeX = (int)shapeIn.sizeX();
+        final int importSizeY = (int)shapeIn.sizeY();
+        for(int i=0; i<importSizeX; ++i) {
+            capacity-=importSizeY;
+            if(capacity<0) {
+                MemorySegment.copy(values[i], 0, memorySegment, VALUE_LAYOUT, i * 4 * importSizeY, importSizeY + Math.toIntExact(capacity));
+                break;
+            }
+            MemorySegment.copy(values[i], 0, memorySegment, VALUE_LAYOUT, i * 4 * importSizeY, importSizeY);
+        }
+        return this;
     }
 
     @Override
@@ -133,6 +159,19 @@ public record FloatArray(
     	return memorySegment.toArray(VALUE_LAYOUT);
     }
 
+    public float[][] toArray2D() {
+        if(shape.dimensionCount()!=2)
+            throw new IllegalArgumentException("shape must be dim 2");
+        final int sizeX = Math.toIntExact(shape.sizeX());
+        final int sizeY = Math.toIntExact(shape.sizeY());
+        final long stride = sizeY * 4;
+        var array2D = new float[sizeX][];
+        for(int i = 0; i<sizeX; ++i) {
+            array2D[i] = memorySegment.asSlice(i * stride, stride).toArray(VALUE_LAYOUT);
+        }
+        return array2D;
+    }
+
     @Override
     public final String toString() {
         var toStringHelper = new ToStringHelper(shape);
@@ -195,7 +234,8 @@ public record FloatArray(
             final FloatArray other, final long otherOffset,
             final long size) {
 
-        if(size < SPECIES.length()) return dotProductNonSimd(thisOffset, other, otherOffset, size);
+        if(size < SPECIES.length())
+            return dotProductNonSimd(thisOffset, other, otherOffset, size);
 
         // perform dot product using Vector API
         var sum = FloatVector.zero(SPECIES);
@@ -216,9 +256,10 @@ public record FloatArray(
     public float dotProduct(final FloatArray other) {
         final int thisSize = Math.toIntExact(shape().totalSize());
         final int otherSize = Math.toIntExact(shape().totalSize());
-        if(thisSize!=otherSize) throw new IllegalArgumentException(
-            "this shape (%d) and other shape (%d) must be of equal totalSize"
-            .formatted(thisSize, otherSize));
+        if(thisSize!=otherSize)
+            throw new IllegalArgumentException(
+                "this shape (%d) and other shape (%d) must be of equal totalSize"
+                .formatted(thisSize, otherSize));
         return dotProduct(0, other, 0, thisSize);
     }
 

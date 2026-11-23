@@ -51,4 +51,47 @@ public class MatrixMultiply {
         return r;
     }
 
+    public FloatArray multiply(final Arena arena, final FloatArray a, final FloatArray b) {
+        if(a.shape().sizeX() != b.shape().sizeY()
+                || b.shape().sizeX() != a.shape().sizeY())
+            throw new IllegalArgumentException("Shapes incompatible: %s <-> %s"
+                    .formatted(a.shape(), b.shape()));
+        if(a.shape().dimensionCount()!=2)
+            throw new IllegalArgumentException("Invalid Shape dimension count: %d"
+                    .formatted(a.shape().dimensionCount()));
+        return multiplyTransposed(arena, a, b.transpose(arena));
+    }
+
+    public float[][] multiplyFloat(final float[][] a, final float[][] b) {
+        if (a[0].length != b.length)
+            throw new IllegalArgumentException("Incompatible dimensions");
+
+        float[][] result = new float[a.length][b[0].length];
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < b[0].length; j++) {
+                for (int k = 0; k < b.length; k++) {
+                    result[i][j] += a[i][k] * b[k][j];
+                }
+            }
+        }
+        return result;
+    }
+
+    public float[][] multiplyFloat2(final float[][] a, final float[][] b) {
+        if (a[0].length != b.length)
+            throw new IllegalArgumentException("Incompatible dimensions");
+
+        float[][] result = new float[a.length][b[0].length];
+        for (int i = 0; i < a.length; i++) {
+            for (int j = 0; j < b[0].length; j++) {
+                double sum = 0.;
+                for (int k = 0; k < b.length; k++) {
+                    sum+=(double)(a[i][k]) * (double)(b[k][j]);
+                }
+                result[i][j] = (float)sum;
+            }
+        }
+        return result;
+    }
+
 }

@@ -34,7 +34,7 @@ import jcompute.core.util.function.TriLongConsumer;
 /**
  * Tuple of long, where the elements give the lengths of the corresponding array dimensions.
  */
-public record Shape(int dimensionCount, long totalSize, long sizeX, long sizeY, long sizeZ)
+public value record Shape(int dimensionCount, long totalSize, long sizeX, long sizeY, long sizeZ)
 implements Serializable {
 
     public static Shape empty() {
