@@ -38,6 +38,12 @@ class CartesianProductTest {
         adder.reset();
         fs.forEachParallel(v->adder.add(hash(v)));
         assertEquals(337184640L, adder.longValue());
+
+        adder.reset();
+        fs.forEachSequential(
+                v->(v[0] & 1) == 1,
+                v->adder.add(hash(v)));
+        assertEquals(173392320L, adder.longValue());
     }
 
     @Test
@@ -52,6 +58,12 @@ class CartesianProductTest {
         adder.reset();
         fs.forEachParallel(v->adder.add(hash(v)));
         assertEquals(337184640L, adder.longValue());
+
+        adder.reset();
+        fs.forEachSequential(
+                v->(v[0] & 1) == 1,
+                v->adder.add(hash(v)));
+        assertEquals(173392320L, adder.longValue());
     }
 
     int hash(final int...v) {
